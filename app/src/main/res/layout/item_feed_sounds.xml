@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?><!-- item_feed.xml -->
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="8dp"
+    card_view:cardCornerRadius="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--ImageView
+            android:id="@+id/ivUserProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_feed_top" /-->
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="10dp" >
+            <ImageView
+                android:layout_width="18dp"
+                android:id="@+id/ivUserProfile"
+                android:layout_height="18dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/camera"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:textColor="@android:color/black"
+                android:id="@+id/ivTitle"/>
+        </LinearLayout>
+
+
+        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:clickable="true"
+            android:id="@+id/cardView"
+
+            card_view:cardCornerRadius="0dp"
+            card_view:cardElevation="0dp"
+            android:layout_marginTop="10dp"
+            card_view:cardBackgroundColor="@android:color/black"
+
+            card_view:cardPreventCornerOverlap="false"
+            card_view:cardUseCompatPadding="true">
+
+
+            <com.google.android.youtube.player.YouTubeThumbnailView
+                android:id="@+id/youtube_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:scaleType="centerCrop"
+                android:visibility="visible"/>
+
+            <RelativeLayout android:id="@+id/relativeLayout_over_youtube_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:background="@color/color_background_transparent"
+
+                android:visibility="visible">
+
+                <ImageView android:id="@+id/btnYoutube_player"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="center"
+                    android:src="@mipmap/you"/>
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+
+
+            <WebView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/webView"
+                tools:ignore="WebViewLayout" />
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnDownload"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:text="@string/download"
+                android:textColor="@android:color/white"
+                android:background="@color/colorAccent"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_marginLeft="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginRight="12dp"
+
+                android:layout_gravity="center"
+                android:layout_marginEnd="12dp"
+                android:text="@string/txt_share_"/>
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@mipmap/gplus"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/img_gplus"/>
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@mipmap/whats"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/img_whats"/>
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@mipmap/insta"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/img_insta"/>
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@mipmap/twitter"
+                android:layout_gravity="center"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:id="@+id/img_twitter"/>
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@mipmap/fcb"
+                android:layout_gravity="center"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:id="@+id/img_fcb"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>

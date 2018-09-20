@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="ass_activityScreenTitles">
+        <item>معلوماتي</item>
+        <item>إضافة موضوع</item>
+        <item>طلبات المستفيدين</item>
+        <item>شارك التطبيق</item>
+        <item>عن التطبيق</item>
+        <item>الشروط والأحكام</item>
+        <item>تواصل معنا</item>
+        <item>تسجيل الخروج</item>
+    </string-array>
+    <string-array name="ben_activityScreenTitles">
+        <item>الرئيسية-الجمعيات</item>
+        <item>الجمعيات المشترك بها</item>
+        <item>شارك التطبيق</item>
+        <item>عن التطبيق</item>
+        <item>الشروط والأحكام</item>
+        <item>تواصل معنا</item>
+        <item>تسجيل الخروج</item>
+    </string-array>
+    <string-array name="general_activityScreenTitles">
+        <item>الرئيسية-الجمعيات</item>
+        <item>شارك التطبيق</item>
+        <item>عن التطبيق</item>
+        <item>الشروط والأحكام</item>
+        <item>تواصل معنا</item>
+    </string-array>
+
+
+
+</resources>

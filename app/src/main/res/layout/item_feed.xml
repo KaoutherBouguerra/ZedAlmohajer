@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?><!-- item_feed.xml -->
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical">
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="8dp"
+    card_view:cardCornerRadius="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--ImageView
+            android:id="@+id/ivUserProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_feed_top" /-->
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="10dp" >
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="38dp"
+                android:id="@+id/ivUserProfile"
+                android:layout_height="38dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/user_profile_image_background"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_gravity="center"
+                android:textColor="@android:color/black"
+                android:id="@+id/ivTitle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/time"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+
+                android:textColor="@android:color/darker_gray"
+                android:id="@+id/ivDate"/>
+        </LinearLayout>
+
+        <com.art4muslim.zedalmouhajer.view.SquaredFrameLayout
+            android:id="@+id/vImageRoot"
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivFeedCenter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+
+
+
+
+        </com.art4muslim.zedalmouhajer.view.SquaredFrameLayout>
+        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:clickable="true"
+            android:id="@+id/cardView"
+
+            card_view:cardCornerRadius="0dp"
+            card_view:cardElevation="0dp"
+            android:layout_marginTop="10dp"
+            card_view:cardBackgroundColor="@android:color/black"
+
+            card_view:cardPreventCornerOverlap="false"
+            card_view:cardUseCompatPadding="true">
+
+
+            <com.google.android.youtube.player.YouTubeThumbnailView
+                android:id="@+id/youtube_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:scaleType="centerCrop"
+                android:visibility="visible"/>
+
+            <RelativeLayout android:id="@+id/relativeLayout_over_youtube_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:background="@color/color_background_transparent"
+
+                android:visibility="visible">
+
+                <ImageView android:id="@+id/btnYoutube_player"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="center"
+                    android:src="@mipmap/you"/>
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <TextView
+            android:id="@+id/ivFeedBottom"
+            android:layout_width="match_parent"
+            android:layout_margin="16dp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view_comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_background_comments"
+        android:layout_gravity="center"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        card_view:cardCornerRadius="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_background_comments"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="10dp" >
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="38dp"
+                    android:id="@+id/ivUserCommentProfile"
+                    android:layout_height="38dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/user"
+                    android:background="@drawable/user_profile_image_background"
+                    />
+
+                <EditText
+                    android:id="@+id/edt_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/full_round_rect_shape_white"
+
+                    android:textSize="14dp"
+                    android:inputType="text"
+                    android:hint="إضافة تعليق"
+                    android:imeOptions="actionSend"
+                    android:padding="10dp"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:background="@color/color_separator_comments"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/layout_comments">
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+</LinearLayout>

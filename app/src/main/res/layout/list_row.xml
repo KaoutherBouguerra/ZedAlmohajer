@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/full_rectangle_grey"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:id="@+id/linear_name"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+
+
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    >
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imgUser"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="@drawable/user_profile_image_background"
+        android:elevation="4dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_drawable_padding"
+            android:paddingStart="@dimen/activity_drawable_padding"
+            android:text="@string/txt_hello"
+            android:id="@+id/txt_name"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+ />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right|end"
+        android:layout_below="@+id/linear_name"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:text="@string/delete"
+            android:background="@android:color/holo_red_dark"
+            android:id="@+id/btnDelete"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:text="@string/modify"
+            android:background="@color/colorAccent"
+            android:id="@+id/btnModify"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@string/activate"
+            android:background="@android:color/white"
+            android:id="@+id/btnActivate"/>
+    </LinearLayout>
+</RelativeLayout>

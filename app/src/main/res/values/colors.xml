@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ABD25D</color>
+    <color name="colorPrimaryDark">#3A7541</color>
+    <color name="colorAccent">#9FC452</color>
+    <color name="colorBg">#FBFEFE</color>
+    <color name="list_divider">#d9d9d9</color>
+    <color name="textColorPrimary">#212121</color>
+    <color name="textColorSecondary">#757575</color>
+    <color name="color_background_transparent">#4D000000</color>
+    <color name="color_background_comments">#F0F1F2</color>
+    <color name="color_separator_comments">#E2E3E4</color>
+</resources>
