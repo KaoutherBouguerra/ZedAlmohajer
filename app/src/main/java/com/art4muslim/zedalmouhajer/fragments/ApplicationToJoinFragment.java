@@ -8,16 +8,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.art4muslim.zedalmouhajer.R;
-import com.art4muslim.zedalmouhajer.fragments.contactus.TabContactUsFragment;
-import com.art4muslim.zedalmouhajer.fragments.contactus.TabFragment1;
-import com.art4muslim.zedalmouhajer.fragments.contactus.TabFragment2;
 import com.art4muslim.zedalmouhajer.fragments.join_application.ActiveRequestsFragment;
 import com.art4muslim.zedalmouhajer.fragments.join_application.NonActiveRequestFragment;
 
@@ -25,7 +24,7 @@ import com.art4muslim.zedalmouhajer.fragments.join_application.NonActiveRequestF
  * A simple {@link Fragment} subclass.
  */
 public class ApplicationToJoinFragment extends Fragment {
-
+    private static final String TAG = ApplicationToJoinFragment.class.getSimpleName();
     public static TabLayout tabLayout;
     public static ViewPager viewPager;
     public static int int_items = 2 ;
@@ -44,6 +43,14 @@ public class ApplicationToJoinFragment extends Fragment {
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
         mTitle.setText( R.string.item_add_users);
+
+        ImageView img_back = (ImageView)   toolbar.getRootView().findViewById(R.id.img_back);
+        img_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG," img back clicked");
+            }
+        });
         /**
          *Set an Apater for the View Pager
          */

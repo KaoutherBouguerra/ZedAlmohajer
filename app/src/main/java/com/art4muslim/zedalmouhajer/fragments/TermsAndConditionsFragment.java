@@ -55,7 +55,7 @@ public class TermsAndConditionsFragment extends Fragment {
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
         mTitle.setText( R.string.txt_terms_cond);
-        getActivity().setTitle(getString(R.string.txt_terms_cond));
+        //getActivity().setTitle(getString(R.string.txt_terms_cond));
 
         if (app.getTermsText() == null)
             getTerms();

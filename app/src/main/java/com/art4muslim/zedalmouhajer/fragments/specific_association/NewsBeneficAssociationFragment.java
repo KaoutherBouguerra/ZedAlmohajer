@@ -8,10 +8,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.art4muslim.zedalmouhajer.BaseApplication;
@@ -24,7 +26,7 @@ import static com.art4muslim.zedalmouhajer.session.SessionManager.KEY_NAME;
  */
 public class NewsBeneficAssociationFragment extends Fragment {
 
-
+    private static final String TAG = NewsBeneficAssociationFragment.class.getSimpleName();
     public static TabLayout tabLayout;
     public static ViewPager viewPager;
     public static int int_items = 2 ;
@@ -45,6 +47,14 @@ public class NewsBeneficAssociationFragment extends Fragment {
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
         mTitle.setText(BaseApplication.session.getUserDetails().get(KEY_NAME));
+        ImageView img_back = (ImageView)   toolbar.getRootView().findViewById(R.id.img_back);
+        img_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG," img back clicked");
+            }
+        });
+
         /**
          *Set an Apater for the View Pager
          */

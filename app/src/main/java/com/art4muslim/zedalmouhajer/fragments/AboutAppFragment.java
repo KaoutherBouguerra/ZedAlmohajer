@@ -56,7 +56,7 @@ public class AboutAppFragment extends Fragment {
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
         mTitle.setText( R.string.about);
-        getActivity().setTitle(getString(R.string.about));
+
 
         if (app.getAbouAppText() == null)
             getAbout();
