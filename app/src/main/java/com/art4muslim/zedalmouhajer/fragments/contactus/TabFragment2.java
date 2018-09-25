@@ -94,7 +94,7 @@ public class TabFragment2 extends Fragment {
 
         if (from.equals("BEN")) {
             mTitle.setText( association.getName());
-            getActivity().setTitle(association.getName());
+
 
             _txt_title.setText(association.getName());
             txt_mobile.setText(association.getMobile());

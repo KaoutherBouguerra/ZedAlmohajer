@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -75,16 +76,23 @@ public class AssociationsGridFragment extends Fragment {
         app = (BaseApplication) getActivity().getApplicationContext();
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
+        ImageView img_back = (ImageView)   toolbar.getRootView().findViewById(R.id.img_back);
+        img_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG," img back clicked");
+            }
+        });
 
 
         isAdded = getArguments().getBoolean("ISADDED");
 
         if (isAdded){
             mTitle.setText( R.string.txt_added_association);
-            getActivity().setTitle(getString(R.string.txt_added_association));
+          //  getActivity().setTitle(getString(R.string.txt_added_association));
         }else{
             mTitle.setText( R.string.txt_all_association);
-            getActivity().setTitle(getString(R.string.txt_all_association));
+          //  getActivity().setTitle(getString(R.string.txt_all_association));
         }
 
 

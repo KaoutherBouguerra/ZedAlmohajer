@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,12 +84,20 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        toolbar.setNavigationIcon(android.R.drawable.btn_star);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("");
 
 
+  //      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  //      getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // back button pressed
+
+                finish();
+            }
+        });
 
         baseApplication = (BaseApplication) getApplicationContext();
 
@@ -263,16 +272,16 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
                 startActivity(intent);
                 finish();
             } else if (position == ASS_POS_INFORMATIONS) {
-                setTitle(R.string.item_MyInfo);
+               // setTitle(R.string.item_MyInfo);
                 NewsBeneficAssociationFragment schedule = new NewsBeneficAssociationFragment();
                 showFragment(schedule);
 
             } else if (position == ASS_POS_ADD_SUBJECT) {
-                setTitle(R.string.txt_add_subject);
+               // setTitle(R.string.txt_add_subject);
                 AddSubjectFragment schedule = new AddSubjectFragment();
                 showFragment(schedule);
             } else if (position == ASS_POS_BENEFICIARY_REQUESTS) {
-                setTitle(R.string.item_add_users);
+              //  setTitle(R.string.item_add_users);
                 ApplicationToJoinFragment schedule = new ApplicationToJoinFragment();
                 showFragment(schedule);
             } else if (position == ASS_POS_SHARE_APP) {
@@ -289,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
 
 
             } else if (position == ASS_POS_CONTACTS_US) {
-                setTitle(R.string.item_contact);
+              //  setTitle(R.string.item_contact);
                 TabContactUsFragment schedule = new TabContactUsFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("FROM", "APP");
@@ -335,11 +344,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
         return ContextCompat.getColor(this, res);
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
+
     private void shareOn(String application, String title, String description){
 
 
