@@ -35,7 +35,9 @@ public class SelectedAssociationFragment extends Fragment {
     LinearLayout linearAbout, linearBen, linearContact, linearRegister;
     ImageView imgAss;
     TextView txtNameAss;
+    TextView txt_register;
 
+    boolean isAdded = false;
     Association association;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,11 +45,21 @@ public class SelectedAssociationFragment extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_selected_association, container, false);
         association = (Association) getArguments().getSerializable("ASSOCIATION");
+        isAdded = getArguments().getBoolean("IS_ADDED");
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
         mTitle.setText(association.getName());
+        ImageView img_back = (ImageView)   toolbar.getRootView().findViewById(R.id.img_back);
+        img_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("TAG"," img back clicked");
 
+              //  getActivity().getFragmentManager().popBackStack();
+                getActivity().onBackPressed();
+            }
+        });
         init();
         Picasso.with(getActivity()).load(association.getImage())
                 .fit()
@@ -76,8 +88,7 @@ public class SelectedAssociationFragment extends Fragment {
                     startActivity(intent);
 
                 }
-             //   AssociationBeneficiaryFragment associationBeneficiaryFragment = new AssociationBeneficiaryFragment();
-              //  showFragment(associationBeneficiaryFragment);
+
             }
         });
 
@@ -102,6 +113,10 @@ public class SelectedAssociationFragment extends Fragment {
             }
         });
 
+        if (isAdded)
+            txt_register.setText("إلغاء الإشتراك");
+        else
+            txt_register.setText(getString(R.string.txt_association_collab));
         return v;
     }
 
@@ -112,6 +127,7 @@ public class SelectedAssociationFragment extends Fragment {
         linearRegister = v.findViewById(R.id.linearRegister);
         imgAss = v.findViewById(R.id.ass_profile_photo);
         txtNameAss = v.findViewById(R.id.txtNameAss);
+        txt_register = v.findViewById(R.id.txt_register);
 
 
     }

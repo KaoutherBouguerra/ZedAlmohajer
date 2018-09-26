@@ -48,8 +48,6 @@
 
                     android:textSize="16dp"
                     android:textColor="@color/colorPrimaryDark"
-                    android:paddingBottom="10dp"
-
 
 
                     android:layout_height="wrap_content"
@@ -177,7 +175,7 @@
                     />
                 <TextView
                     android:id="@+id/txt_register"
-                    android:text="@string/about_ass"
+                    android:text="@string/txt_association_collab"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"

@@ -102,8 +102,8 @@ public class AssociationsGridFragment extends Fragment {
 
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
 
-        if (app.getAssociations().size()==0)
-            adapter = new CustomGrid(getActivity(), associations,fragmentTransaction);
+        if (app.getAssociations().size() == 0 )
+            adapter = new CustomGrid(getActivity(), associations, fragmentTransaction);
         else   adapter = new CustomGrid(getActivity(), app.getAssociations(),fragmentTransaction);
 
         grid.setAdapter(adapter);
@@ -127,10 +127,11 @@ public class AssociationsGridFragment extends Fragment {
               //  }
                 Bundle args = new Bundle();
                 args.putSerializable("ASSOCIATION", association);
+                args.putBoolean("IS_ADDED", isAdded);
                 fragment.setArguments(args);
                 FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.container, fragment, "home Fragment");
-
+                fragmentTransaction.addToBackStack("");
                 fragmentTransaction.commit();
             }
         });
@@ -167,6 +168,7 @@ public class AssociationsGridFragment extends Fragment {
                         Association association = gson.fromJson(String.valueOf(adrJsonObj), Association.class);
                         Log.e(TAG, "getAllAssociation ass name === "+association.getName());
                         associations.add(association);
+                        app.setAssociations(associations);
                     }
 
                     adapter.notifyDataSetChanged();

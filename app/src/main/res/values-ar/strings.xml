@@ -172,6 +172,8 @@
     <string name="songs">اناشيد</string>
     <string name="download">تحميل المادة</string>
     <string name="txt_share_">مشاركة</string>
+    <string name="txt_association_collab">إشترك في الجمعية</string>
+
     <string-array name="social_status">
         <item>متزوج </item>
         <item>أعزب</item>

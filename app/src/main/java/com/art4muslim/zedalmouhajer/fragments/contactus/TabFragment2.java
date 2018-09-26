@@ -55,7 +55,7 @@ public class TabFragment2 extends Fragment {
 
     Association association;
     View v;
-    TextView _txt_title, txt_mobile, txt_text;
+    TextView _txt_title, txt_mobile, txt_email;
     LinearLayout _linear_for_ass;
     ImageView _img_gplus, _img_youtube, _img_insta, _img_twitter , _img_fcb;
     EditText _edt_name, _edtphone, edt_text;
@@ -75,6 +75,7 @@ public class TabFragment2 extends Fragment {
         app = (BaseApplication) getActivity().getApplicationContext();
         initFields();
 
+        if (getArguments() != null)
         from = getArguments().getString("FROM");
         Log.e("wowow"," from what? "+from);
         if (from != null)
@@ -98,7 +99,7 @@ public class TabFragment2 extends Fragment {
 
             _txt_title.setText(association.getName());
             txt_mobile.setText(association.getMobile());
-            txt_text.setText(association.getEmail());
+            txt_email.setText(association.getEmail());
 
             fcbUrl = association.getFacebook();
             instaUrl = association.getInstagram();
@@ -115,7 +116,7 @@ public class TabFragment2 extends Fragment {
             else {
 
                 txt_mobile.setText(app.getInfoApp().getMob());
-                txt_text.setText(app.getInfoApp().getSiteemail());
+                txt_email.setText(app.getInfoApp().getSiteemail());
 
                 fcbUrl = app.getInfoApp().getFacebook();
                 instaUrl = app.getInfoApp().getInstagram();
@@ -196,7 +197,14 @@ public class TabFragment2 extends Fragment {
         _btn_send = v.findViewById(R.id.btn_send);
         _progressBar=(ProgressBar) v.findViewById(R.id.progressBar);
         _linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout);
-
+        _linear_for_ass = (LinearLayout) v.findViewById(R.id.linear_for_ass);
+        _img_fcb = v.findViewById(R.id.img_fcb);
+        _img_youtube = v.findViewById(R.id.img_youtube);
+        _img_twitter = v.findViewById(R.id.img_twitter);
+        _img_gplus = v.findViewById(R.id.img_gplus);
+        _img_insta = v.findViewById(R.id.img_insta);
+        txt_mobile = v.findViewById(R.id.txt_phone);
+        txt_email = v.findViewById(R.id.txt_email);
     }
 
 
@@ -368,7 +376,7 @@ public class TabFragment2 extends Fragment {
                     InfoApp infoApp = new InfoApp(siteemail,mob, facebook, twitter, youtube, instagram, googleplus);
                     app.setInfoApp(infoApp);
                     txt_mobile.setText(app.getInfoApp().getMob());
-                    txt_text.setText(app.getInfoApp().getSiteemail());
+                    txt_email.setText(app.getInfoApp().getSiteemail());
 
                     fcbUrl = app.getInfoApp().getFacebook();
                     instaUrl = app.getInfoApp().getInstagram();

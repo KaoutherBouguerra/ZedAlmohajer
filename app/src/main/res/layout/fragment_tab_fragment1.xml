@@ -20,9 +20,7 @@
             android:layout_marginTop="22dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:id="@+id/linear_for_ass"
-
-            >
+            android:id="@+id/linear_for_ass">
 
             <View
                 android:layout_width="5dp"

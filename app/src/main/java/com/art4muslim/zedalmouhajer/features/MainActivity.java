@@ -70,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
 
 
     private String[] screenTitles;
-    String from;
+    String from = null;
+    boolean isLoggedIn = false;
     DrawerAdapter adapter;
 
     BaseApplication baseApplication;
@@ -104,7 +105,8 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
         association = (Association) getIntent().getSerializableExtra("ASSOCIATION");
 
         baseApplication.setAssociation(association);
-        from = getIntent().getStringExtra("FROM");
+        from = BaseApplication.session.getIsFrom();
+        isLoggedIn = BaseApplication.session.isLoggedIn();
 
         slidingRootNav = new SlidingRootNavBuilder(this)
                 .withToolbarMenuToggle(toolbar)
@@ -116,17 +118,18 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
                 .inject();
 
         // screenIcons = loadScreenIcons();
-        if (from == null) {
+        if (!isLoggedIn) {
+
             screenTitles = loadGeneralScreenTitles();
 
-        } else {
+        }  else {
             if (from.equals("BEN"))
                 screenTitles = loadBENScreenTitles();
             else screenTitles = loadScreenTitles();
 
         }
 
-        if (from == null) {
+        if (!isLoggedIn) {
 
             adapter = new DrawerAdapter(Arrays.asList(
                     createItemFor(GENERAL_POS_ASSOCIATIONS).setChecked(true),
@@ -174,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
         list.setAdapter(adapter);
 
 
-        if (from == null) {
+        if (!isLoggedIn) {
             adapter.setSelected(BEN_POS_ASSOCIATIONS);
         } else {
             if (from.equals("BEN"))
@@ -188,9 +191,9 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
     public void onItemSelected(int position) {
 
         Log.e(TAG, "onItemSelected pos = " + position);
-        if (from == null) {
+        if (!isLoggedIn) {
 
-            if (position == BEN_POS_ASSOCIATIONS) {
+            if (position == GENERAL_POS_ASSOCIATIONS) {
 
                 AssociationsGridFragment schedule = new AssociationsGridFragment();
                 Bundle bundle = new Bundle();
@@ -198,20 +201,20 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
                 schedule.setArguments(bundle);
                 showFragment(schedule);
 
-            } else if (position == BEN_POS_SHARE_APP) {
+            } else if (position == GENERAL_POS_SHARE_APP) {
                 shareOn("", getString(R.string.app_name), "");
-            } else if (position == BEN_POS_ABOUT_APP) {
+            } else if (position == GENERAL_POS_ABOUT_APP) {
 
                 AboutAppFragment schedule = new AboutAppFragment();
                 showFragment(schedule);
 
-            } else if (position == BEN_POS_ITEMS_CONDITIONS) {
+            } else if (position == GENERAL_POS_ITEMS_CONDITIONS) {
 
                 TermsAndConditionsFragment schedule = new TermsAndConditionsFragment();
                 showFragment(schedule);
 
 
-            } else if (position == BEN_POS_CONTACTS_US) {
+            } else if (position == GENERAL_POS_CONTACTS_US) {
 
                 TabContactUsFragment schedule = new TabContactUsFragment();
                 Bundle bundle = new Bundle();

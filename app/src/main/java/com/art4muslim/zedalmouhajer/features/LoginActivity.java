@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
 
     ImageView _img_logo;
     String accountType;
+    String from = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -194,9 +195,15 @@ public class LoginActivity extends AppCompatActivity {
 
     private void LoginFirst(final String phone, final String password) {
         String url;
-        if (accountType.equals(_txt_ben.getText().toString()))
+        if (accountType.equals(_txt_ben.getText().toString())){
             url = Constants.LOGIN_URL_BEN;
-        else  url = Constants.LOGIN_URL_ASS;
+            from ="BEN";
+        }
+
+        else  {
+            url = Constants.LOGIN_URL_ASS;
+            from= "ASSOCIATION";
+        }
         //+"phone="+phone+"&password="+password;
 
         Log.e(TAG, "LoginFirst url "+url);
@@ -234,6 +241,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
 
+                        BaseApplication.session.saveKeyIsFrom(from);
                         startActivity(intent);
 
                         finish();

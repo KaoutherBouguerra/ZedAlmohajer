@@ -20,6 +20,7 @@ public class SessionManager {
     SharedPreferences.Editor editor;
     private static final String PREF_NAME = "zedMohajerPref";
     private static final String IS_LOGIN = "IsLoggedIn";
+    private static final String KEY_IS_FROM = "Is_FROM";
     public static final String KEY_NAME = "name";
     // Email address (make variable public to access from outside)
     public static final String KEY_EMAIL = "email";
@@ -54,6 +55,12 @@ public class SessionManager {
 
 
     }
+
+    public void saveKeyIsFrom(String isFrom){
+        editor.putString(KEY_IS_FROM, isFrom);
+        editor.commit();
+
+    }
     /**
      * Get stored session data
      */
@@ -71,6 +78,10 @@ public class SessionManager {
     }
     public boolean isLoggedIn() {
         return pref.getBoolean(IS_LOGIN, false);
+    }
+
+    public String getIsFrom(){
+        return pref.getString(KEY_IS_FROM,null);
     }
 
     public void createLoginSession(String id,String name, String phone, String phoneHome,String thumbnail, String status) {
