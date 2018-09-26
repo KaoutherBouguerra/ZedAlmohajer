@@ -30,7 +30,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.art4muslim.zedalmouhajer.BaseApplication;
 import com.art4muslim.zedalmouhajer.R;
 import com.art4muslim.zedalmouhajer.features.LoginActivity;
-import com.art4muslim.zedalmouhajer.fragments.specific_association.AssociationBeneficiaryFragment;
 import com.art4muslim.zedalmouhajer.fragments.specific_association.NewsBeneficAssociationFragment;
 import com.art4muslim.zedalmouhajer.models.Association;
 import com.art4muslim.zedalmouhajer.session.Constants;
@@ -44,12 +43,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.art4muslim.zedalmouhajer.session.Constants.CONSTANT_BEN;
 import static com.art4muslim.zedalmouhajer.session.SessionManager.KEY_NAME;
 import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
 
 /**
  * A simple {@link Fragment} subclass.
- */
+ **/
 public class SelectedAssociationFragment extends Fragment {
 
     private static final String TAG = SelectedAssociationFragment.class.getSimpleName();
@@ -63,27 +63,27 @@ public class SelectedAssociationFragment extends Fragment {
     LinearLayout _relative;
     boolean isAdded = false;
     Association association;
+    BaseApplication app;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_selected_association, container, false);
+        app = (BaseApplication) getActivity().getApplicationContext();
         association = (Association) getArguments().getSerializable("ASSOCIATION");
+        app.setAssociation(association);
         isAdded = getArguments().getBoolean("IS_ADDED");
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
         mTitle.setText(association.getName());
         ImageView img_back = (ImageView)   toolbar.getRootView().findViewById(R.id.img_back);
-        img_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("TAG"," img back clicked");
+        img_back.setOnClickListener(v -> {
+            Log.e("TAG"," img back clicked");
 
-              //  getActivity().getFragmentManager().popBackStack();
-                getActivity().onBackPressed();
-            }
+            getActivity().onBackPressed();
         });
+
         init();
         Picasso.with(getActivity()).load(association.getImage())
                 .fit()
@@ -99,41 +99,34 @@ public class SelectedAssociationFragment extends Fragment {
             }
         });
 
-        linearBen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // todo check if user connected
-                Log.e("selected ass"," is logged = "+BaseApplication.session.isLoggedIn());
-                if (BaseApplication.session.isLoggedIn()) {
-                    NewsBeneficAssociationFragment schedule = new NewsBeneficAssociationFragment();
-                    showFragment(schedule);
-                }else {
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    startActivity(intent);
-
-                }
-
+        linearBen.setOnClickListener(view -> {
+            // todo check if user connected
+            Log.e("selected ass"," is logged = "+BaseApplication.session.isLoggedIn());
+            if (BaseApplication.session.isLoggedIn()) {
+                NewsBeneficAssociationFragment schedule = new NewsBeneficAssociationFragment();
+                showFragment(schedule);
+            }else {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
             }
         });
 
-        linearContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CommunicateWithAssociationFragment associationBeneficiaryFragment = new CommunicateWithAssociationFragment();
-                showFragment(associationBeneficiaryFragment);
+        linearContact.setOnClickListener(view -> {
+            CommunicateWithAssociationFragment associationBeneficiaryFragment = new CommunicateWithAssociationFragment();
+            showFragment(associationBeneficiaryFragment);
 
 
-            }
         });
 
-        linearRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-              //  RegisterToAssociationFragment associationBeneficiaryFragment = new RegisterToAssociationFragment();
-              // showFragment(associationBeneficiaryFragment);
+        linearRegister.setOnClickListener(view -> {
+          //  RegisterToAssociationFragment associationBeneficiaryFragment = new RegisterToAssociationFragment();
+          // showFragment(associationBeneficiaryFragment);
+            if (BaseApplication.session.isLoggedIn() && BaseApplication.session.getIsFrom().equals(CONSTANT_BEN)) {
 
                 attemptRegister();
-
+            } else {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -152,11 +145,10 @@ public class SelectedAssociationFragment extends Fragment {
         imgAss = v.findViewById(R.id.ass_profile_photo);
         txtNameAss = v.findViewById(R.id.txtNameAss);
         txt_register = v.findViewById(R.id.txt_register);
-        _progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-        _relative = (LinearLayout) v.findViewById(R.id.relative);
-
-
+        _progressBar = v.findViewById(R.id.progressBar);
+        _relative =  v.findViewById(R.id.relative);
     }
+
     private void showFragment(Fragment fragment) {
 
         Bundle args = new Bundle();
@@ -165,14 +157,15 @@ public class SelectedAssociationFragment extends Fragment {
         fragment.setArguments(args);
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, fragment, "home Fragment");
-
+        fragmentTransaction.addToBackStack("");
         fragmentTransaction.commit();
     }
 
 
 
     private void attemptRegister() {
-
+        _progressBar.setVisibility(View.VISIBLE);
+        _relative.setVisibility(View.GONE);
 
         register(BaseApplication.session.getUserDetails().get(Key_UserID), association.getId());
 
@@ -181,6 +174,8 @@ public class SelectedAssociationFragment extends Fragment {
     private void register(final String idBen, final String idAss ) {
 
         String url = Constants.REGISTER_BENEFIC_TO_ASS;
+        if (isAdded)
+            url = Constants.DELETE_BENEFIC_TO_ASS;
         //+"phone="+phone+"&password="+password;
 
         Log.e(TAG, "register url "+url);
@@ -207,9 +202,14 @@ public class SelectedAssociationFragment extends Fragment {
                         selectedAssociationFragment.setArguments(args);
                         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                         fragmentTransaction.replace(R.id.container, selectedAssociationFragment, "home Fragment");
-
+                        fragmentTransaction.addToBackStack("");
                         fragmentTransaction.commit();
 
+                        if (isAdded) {
+                            app.getAddedAssociations().remove(association);
+                        }else{
+                            app.getAddedAssociations().add(association);
+                        }
 
                     } else {
 

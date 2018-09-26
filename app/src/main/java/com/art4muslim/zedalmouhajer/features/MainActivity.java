@@ -39,6 +39,7 @@ import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 
 import java.util.Arrays;
 
+import static com.art4muslim.zedalmouhajer.session.Constants.CONSTANT_BEN;
 import static com.art4muslim.zedalmouhajer.session.SessionManager.KEY_NAME;
 
 public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnItemSelectedListener{
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
             screenTitles = loadGeneralScreenTitles();
 
         }  else {
-            if (from.equals("BEN"))
+            if (from.equals(CONSTANT_BEN))
                 screenTitles = loadBENScreenTitles();
             else screenTitles = loadScreenTitles();
 
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
 
         } else  {
 
-        if (from.equals("BEN"))
+        if (from.equals(CONSTANT_BEN))
             adapter = new DrawerAdapter(Arrays.asList(
                     createItemFor(BEN_POS_ASSOCIATIONS).setChecked(true),
                     createItemFor(BEN_POS_YOUR_ASSOCIATIONS),
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
         if (!isLoggedIn) {
             adapter.setSelected(BEN_POS_ASSOCIATIONS);
         } else {
-            if (from.equals("BEN"))
+            if (from.equals(CONSTANT_BEN))
                 adapter.setSelected(BEN_POS_ASSOCIATIONS);
             else
                 adapter.setSelected(ASS_POS_INFORMATIONS);
@@ -225,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
             }
 
         } else {
-        if (from.equals("BEN")) {
+        if (from.equals(CONSTANT_BEN)) {
             if (position == BEN_POS_LOGOUT) {
 
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -319,6 +320,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
     private void showFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace( R.id.container,fragment,"home Fragment");
+        fragmentTransaction.addToBackStack("");
         fragmentTransaction.commit();
     }
 

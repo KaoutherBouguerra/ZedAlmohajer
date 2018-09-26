@@ -55,6 +55,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -91,8 +93,9 @@ public class AssociationBeneficiaryFragment extends Fragment implements SwipeRef
             association = (Association) getArguments().getSerializable("ASSOCIATION");
         else association = app.getAssociation();
 
-                isActive = true;
-        //  sessionman=new SessionManager(getContext());
+
+        isActive = true;
+
         txtNoData = (TextView) v.findViewById(R.id.txt_no_data);
         listView = (ListView) v.findViewById(R.id.list);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
@@ -151,9 +154,9 @@ public class AssociationBeneficiaryFragment extends Fragment implements SwipeRef
 
         swipeRefreshLayout.setRefreshing(true);
         String url;
-        if (getArguments() != null)
+        if (association != null)
            url = Constants.GET_ALL_BENEF+association.getId();
-        else url = Constants.GET_ALL_BENEF+association.getId_user();
+        else url = Constants.GET_ALL_BENEF+BaseApplication.session.getUserDetails().get(Key_UserID);
         //+KEY_API_TOKEN+"="+ BaseApplication.session.getAccessToken();
 
         Log.e(TAG, "fetchAllBene url "+url);

@@ -76,6 +76,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserIMAGE;
 import static com.art4muslim.zedalmouhajer.utils.Utils.printDifference;
 
 /**
@@ -164,8 +165,12 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  
         feedItems.clear();
 
         for (News news: actualiteArrayList){
+            if (app.getAssociation() != null)
             feedItems.add(new FeedItem( news.getId(), news.getName(), news.getDetails(),
                     news.getDate(), news.getImage(),app.getAssociation().getImage(),news.getYoutubelink()));
+            else
+                feedItems.add(new FeedItem( news.getId(), news.getName(), news.getDetails(),
+                        news.getDate(), news.getImage(),BaseApplication.session.getUserDetails().get(Key_UserIMAGE),news.getYoutubelink()));
         }
 
         if (animated) {
@@ -233,11 +238,12 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  
         public void bindView(final FeedItem feedItem) {
             this.feedItem = feedItem;
 
+            if (feedItem.url_image != null && !feedItem.url_image.isEmpty())
             Picasso.with(context)
                     .load(feedItem.url_image)
                     .into(ivUserProfile);
 
-            if (feedItem.url_news_image != null){
+            if (feedItem.url_news_image != null && !feedItem.url_news_image.isEmpty()){
                 vImageRoot.setVisibility(View.VISIBLE);
                 Picasso.with(context)
                         .load(feedItem.url_news_image)
@@ -486,7 +492,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  
 
         private void getAllComments(){
 
-            String url = Constants.GET_ALL_COMMENTS;
+            String url = Constants.GET_ALL_COMMENTS+ feedItem.id_actualite;
             Log.e("get comments", "getAllComments url "+url);
 
             StringRequest hisRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {

@@ -43,6 +43,7 @@ import com.art4muslim.zedalmouhajer.R;
 import com.art4muslim.zedalmouhajer.models.City;
 import com.art4muslim.zedalmouhajer.session.Constants;
 import com.art4muslim.zedalmouhajer.utils.AlertDialogManager;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,6 +56,9 @@ import java.util.Map;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.art4muslim.zedalmouhajer.session.Constants.CONSTANT_ASSOCIATION;
+import static com.art4muslim.zedalmouhajer.session.Constants.CONSTANT_BEN;
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -74,12 +78,21 @@ public class BeneficiaryFragment extends Fragment {
     String status;
     SpinnerCityAdapter  adapter;
     ArrayList<City> cities = new ArrayList<City>();
-
+    String newTokenFromFCM;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_beneficiary, container, false);
+
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(getActivity(), instanceIdResult -> {
+
+            newTokenFromFCM = instanceIdResult.getToken();
+            Log.e("new Token From FCM", newTokenFromFCM);
+
+        });
+
         initFields();
         btnSignUp.setOnClickListener(new View.OnClickListener() {
 
@@ -386,7 +399,10 @@ public class BeneficiaryFragment extends Fragment {
                     if (_status) {
 
                         BaseApplication.session.createLoginSession(idNumber,name,phone,"","",status);
+                        BaseApplication.session.saveKeyIsFrom(CONSTANT_BEN);
 
+
+                        sendRegistrationToServer(newTokenFromFCM);
                         showDialog();
                     } else {
 
@@ -455,6 +471,85 @@ public class BeneficiaryFragment extends Fragment {
                 params.put("city_id", ""+ id_city);
                 params.put("password", ""+ password);
                 params.put("socialstatus", ""+ status);
+
+                return params;
+            }
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                try {
+
+                    String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                    return Response.success(json, HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                }
+            }
+        };
+
+
+        // Adding request to request queue
+        BaseApplication.getInstance().addToRequestQueue(LoginFirstRequest);
+
+
+    }
+
+
+    private void sendRegistrationToServer(String token) {
+
+        String url = Constants.GET_TOKEN_BEN;
+        if (BaseApplication.session.isLoggedIn()){
+            if (BaseApplication.session.getIsFrom().equals(CONSTANT_ASSOCIATION)){
+                url = Constants.GET_TOKEN_ASS;
+
+            }
+            sendToken(BaseApplication.session.getUserDetails().get(Key_UserID), token, url);
+        }
+
+    }
+
+    private void sendToken(final String id, final String token, String url ) {
+
+
+
+        Log.e(TAG, "url "+url);
+        Log.e(TAG, "id   "+id);
+        Log.e(TAG, "token "+token);
+
+
+        StringRequest LoginFirstRequest = new StringRequest(com.android.volley.Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                Log.v(TAG,"response send token to server == " +response);
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+
+                if (error instanceof AuthFailureError) {
+
+                    // AlertDialogManager.showAlertDialog(activity,activity.getResources().getString(R.string.app_name),activity.getResources().getString(R.string.authontiation),false,3);
+
+                } else if (error instanceof ServerError) {
+                    //  AlertDialogManager.showAlertDialog(activity,activity.getResources().getString(R.string.app_name),activity.getResources().getString(R.string.servererror),false,3);
+                } else if (error instanceof NetworkError) {
+                    // AlertDialogManager.showAlertDialog(activity,activity.getResources().getString(R.string.networkerror),activity.getResources().getString(R.string.networkerror),false,3);
+
+                } else if (error instanceof ParseError) {
+                } else if (error instanceof NoConnectionError) {
+                } else if (error instanceof TimeoutError) {
+                    // AlertDialogManager.showAlertDialog(activity,activity.getResources().getString(R.string.app_name),activity.getResources().getString(R.string.timeouterror),false,3);
+                }
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("id", id);
+                params.put("token", token);
 
                 return params;
             }

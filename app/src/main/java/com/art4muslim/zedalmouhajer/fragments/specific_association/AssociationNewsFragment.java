@@ -45,6 +45,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.art4muslim.zedalmouhajer.session.SessionManager.KEY_NAME;
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -100,6 +103,7 @@ public class AssociationNewsFragment extends Fragment  {
         });
         rvFeed.setItemAnimator(new FeedItemAnimator());
         if (Utils.isOnline(getActivity()))
+       //     if (actualiteArrayList.size() == 0)
             startContentAnimation();
         else {
 
@@ -116,8 +120,11 @@ public class AssociationNewsFragment extends Fragment  {
     }
 
     private void getNews() {
+        String url;
+        if (app.getAssociation() != null)
+         url = Constants.GET_ALL_ASS_NEWS+app.getAssociation().getId_user();
+        else url = Constants.GET_ALL_ASS_NEWS+BaseApplication.session.getUserDetails().get(Key_UserID);
 
-        String url = Constants.GET_ALL_ASS_NEWS+app.getAssociation().getId_user();
         //+KEY_API_TOKEN+"="+ BaseApplication.session.getAccessToken();
 
         Log.e(TAG, "get News url "+url);

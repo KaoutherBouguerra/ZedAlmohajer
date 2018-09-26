@@ -80,7 +80,16 @@ public class BaseApplication extends Application {
 
 
     public static ArrayList<Association> associations = new ArrayList<Association>();
+    public static ArrayList<Association> addedAssociations = new ArrayList<Association>();
     private RequestQueue mRequestQueue;
+
+    public static ArrayList<Association> getAddedAssociations() {
+        return addedAssociations;
+    }
+
+    public static void setAddedAssociations(ArrayList<Association> addedAssociations) {
+        BaseApplication.addedAssociations = addedAssociations;
+    }
 
     public static ArrayList<Association> getAssociations() {
         return associations;

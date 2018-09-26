@@ -464,7 +464,7 @@ public class AssociationFragment extends Fragment {
         fragment.setArguments(args);
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, fragment, "home Fragment");
-
+        fragmentTransaction.addToBackStack("");
         fragmentTransaction.commit();
     }
 
