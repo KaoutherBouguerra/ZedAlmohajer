@@ -64,54 +64,6 @@
             android:gravity="center"
             android:layout_marginBottom="16dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16dp"
-                android:layout_gravity="center"
-                android:layout_marginRight="10dp"
-                android:layout_marginEnd="10dp"
-                android:textColor="@color/colorPrimaryDark"
-                android:text="هل أنت؟"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-
-                android:gravity="center"
-                android:id="@+id/line1"
-                android:weightSum="1"
-
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:padding="8dp"
-                    android:text="@string/benefis"
-                    android:layout_weight="0.5"
-                    android:gravity="center"
-                    android:background="@drawable/round_left_rect_shape_b"
-                    android:id="@+id/txt_ben"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorAccent"
-                    android:padding="8dp"
-                    android:layout_weight="0.5"
-                    android:gravity="center"
-                    android:background="@drawable/round_right_rect_shape_w"
-                    android:text="@string/association"
-                    android:id="@+id/txt_ass"/>
-
-            </LinearLayout>
-        </LinearLayout>
-
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

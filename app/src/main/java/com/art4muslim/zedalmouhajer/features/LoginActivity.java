@@ -60,16 +60,17 @@ public class LoginActivity extends AppCompatActivity {
     @NotEmpty(messageId = R.string.nonEmpty, order = 2)
     @MinLength(value = 4, messageId =  R.string.validation_number_length, order = 3)
     protected EditText inputPassword;
-    TextView _txt_ben, _txt_ass;
+
 
     ImageView _img_logo;
     String accountType;
-    String from = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        accountType = getIntent().getStringExtra("FROM");
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -77,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         initFields();
-        accountType = _txt_ben.getText().toString();
+
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,32 +104,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-        _txt_ben.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                accountType = _txt_ben.getText().toString();
-                _txt_ben.setBackgroundResource(R.drawable.round_left_rect_shape_b);
-                _txt_ben.setTextColor(ContextCompat.getColor(LoginActivity.this, android.R.color.white));
-                _txt_ass.setBackgroundResource(R.drawable.round_right_rect_shape_w);
-                _txt_ass.setTextColor(ContextCompat.getColor(LoginActivity.this, R.color.colorAccent));
 
-
-
-            }
-        });
-        _txt_ass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                 accountType = _txt_ass.getText().toString();
-                _txt_ass.setBackgroundResource(R.drawable.round_right_rect_shape_b);
-                _txt_ass.setTextColor(ContextCompat.getColor(LoginActivity.this, android.R.color.white));
-                _txt_ben.setBackgroundResource(R.drawable.round_left_rect_shape_w);
-                _txt_ben.setTextColor(ContextCompat.getColor(LoginActivity.this, R.color.colorAccent));
-
-
-            }
-        });
 
     }
 
@@ -144,8 +120,7 @@ public class LoginActivity extends AppCompatActivity {
         _linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
 
         btForgetPassword = (TextView) findViewById(R.id.btnForgetPassword);
-        _txt_ben = (TextView) findViewById(R.id.txt_ben);
-        _txt_ass = (TextView) findViewById(R.id.txt_ass);
+
     }
 
     private void attemptLogin() {
@@ -195,14 +170,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private void LoginFirst(final String phone, final String password) {
         String url;
-        if (accountType.equals(_txt_ben.getText().toString())){
+        if (accountType.equals("BEN")){
             url = Constants.LOGIN_URL_BEN;
-            from ="BEN";
+
         }
 
         else  {
             url = Constants.LOGIN_URL_ASS;
-            from= "ASSOCIATION";
+
         }
         //+"phone="+phone+"&password="+password;
 
@@ -241,7 +216,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
 
-                        BaseApplication.session.saveKeyIsFrom(from);
+                        BaseApplication.session.saveKeyIsFrom(accountType);
                         startActivity(intent);
 
                         finish();

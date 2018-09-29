@@ -87,15 +87,13 @@ public class AssociationsGridFragment extends Fragment {
 
         isAdded = getArguments().getBoolean("ISADDED");
 
-        if (isAdded){
+        if (isAdded) {
             mTitle.setText( R.string.txt_added_association);
           //  getActivity().setTitle(getString(R.string.txt_added_association));
         }else{
             mTitle.setText( R.string.txt_all_association);
           //  getActivity().setTitle(getString(R.string.txt_all_association));
         }
-
-
 
         initFields();
 
@@ -145,7 +143,7 @@ public class AssociationsGridFragment extends Fragment {
         return v;
     }
 
-    private void getAllAssociation(){
+    private void getAllAssociation() {
         String url = Constants.GET_ALL_ASS;
         if (isAdded)
             url = Constants.GET_ADDED_ASSOS+BaseApplication.session.getUserDetails().get(Key_UserID);
