@@ -50,6 +50,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -144,7 +146,12 @@ public class ActiveRequestsFragment extends Fragment implements SwipeRefreshLayo
     private void fetchAllBene() {
 
         swipeRefreshLayout.setRefreshing(true);
-        String url = Constants.GET_ALL_BENEF+app.getAssociation().getId();
+
+
+        String url;
+        if (app.getAssociation() != null)
+            url = Constants.GET_ALL_BENEF+app.getAssociation().getId();
+        else url = Constants.GET_ALL_BENEF+BaseApplication.session.getUserDetails().get(Key_UserID);
         //+KEY_API_TOKEN+"="+ BaseApplication.session.getAccessToken();
 
         Log.e(TAG, "fetchAllBene url "+url);

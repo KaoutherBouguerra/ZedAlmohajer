@@ -48,6 +48,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.art4muslim.zedalmouhajer.session.Constants.CONSTANT_BEN;
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -77,7 +80,7 @@ public class CommunicateWithAssociationFragment extends Fragment {
         from = getArguments().getString("FROM");
         Log.e("wowow"," from what? "+from);
              if (from != null)
-            if (from.equals("BEN")) {
+            if (from.equals(CONSTANT_BEN)) {
                 association = (Association) getArguments().getSerializable("ASSOCIATION");
             }
 
@@ -234,7 +237,11 @@ public class CommunicateWithAssociationFragment extends Fragment {
         } else {
             _linearLayout.setVisibility(View.GONE);
             _progressBar.setVisibility(View.VISIBLE);
-            sendMessage(name,phone,text, Integer.parseInt(association.getId()));
+            String idAss ;
+            if (association != null)
+                idAss =   association.getId();
+            else idAss = BaseApplication.session.getUserDetails().get(Key_UserID);
+            sendMessage(name,phone,text, Integer.parseInt(idAss));
         }
 
     }
@@ -253,7 +260,7 @@ public class CommunicateWithAssociationFragment extends Fragment {
         _img_insta = v.findViewById(R.id.img_insta);
         _img_twitter = v.findViewById(R.id.img_twitter);
         _edt_name = v.findViewById(R.id.edt_name);
-        _edtphone = v.findViewById(R.id.edt_phone);
+        _edtphone = v.findViewById(R.id.edtphone);
         _edt_text = v.findViewById(R.id.edt_text);
         _btn_send = v.findViewById(R.id.btn_send);
         _progressBar=(ProgressBar) v.findViewById(R.id.progressBar);

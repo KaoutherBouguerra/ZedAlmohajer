@@ -35,8 +35,7 @@ public class NewsBeneficAssociationFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_news_benefic_association, container, false);
 
@@ -46,11 +45,15 @@ public class NewsBeneficAssociationFragment extends Fragment {
       //  isRightToLeft = getResources().getBoolean(R.bool.is_right_to_left);
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
-        mTitle.setText(BaseApplication.session.getUserDetails().get(KEY_NAME));
+        if (baseApplication.getAssociation() != null)
+        mTitle.setText(baseApplication.getAssociation().getName());
+        else  mTitle.setText(BaseApplication.session.getUserDetails().get(KEY_NAME));
         ImageView img_back = (ImageView)   toolbar.getRootView().findViewById(R.id.img_back);
         img_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (getActivity() != null)
+                getActivity().onBackPressed();
                 Log.e(TAG," img back clicked");
             }
         });

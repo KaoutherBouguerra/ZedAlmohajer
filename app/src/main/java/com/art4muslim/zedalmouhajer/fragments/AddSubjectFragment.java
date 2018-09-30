@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,8 +80,11 @@ public class AddSubjectFragment extends Fragment {
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
         mTitle.setText( R.string.txt_add_subject);
         initFields();
+        String url;
+        if (app.getAssociation() != null)
+            idAss = app.getAssociation().getId_user();
+        else idAss = BaseApplication.session.getUserDetails().get(Key_UserID);
 
-        idAss = app.getAssociation().getId_user();
 
         _btn_send.setOnClickListener(new View.OnClickListener() {
             @Override

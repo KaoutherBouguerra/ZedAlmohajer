@@ -192,11 +192,11 @@ public class TabFragment2 extends Fragment {
     private void initFields() {
 
         _edt_name = v.findViewById(R.id.edt_name);
-        _edtphone = v.findViewById(R.id.etphone);
+        _edtphone = v.findViewById(R.id.edtphone);
         edt_text = v.findViewById(R.id.edt_text);
         _btn_send = v.findViewById(R.id.btn_send);
         _progressBar=(ProgressBar) v.findViewById(R.id.progressBar);
-        _linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout);
+        _linearLayout = (LinearLayout) v.findViewById(R.id.linear);
         _linear_for_ass = (LinearLayout) v.findViewById(R.id.linear_for_ass);
         _img_fcb = v.findViewById(R.id.img_fcb);
         _img_youtube = v.findViewById(R.id.img_youtube);

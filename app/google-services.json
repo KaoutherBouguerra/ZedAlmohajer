@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "950515093682",
+    "firebase_url": "https://zed-elmohajer.firebaseio.com",
+    "project_id": "zed-elmohajer",
+    "storage_bucket": "zed-elmohajer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950515093682:android:d9a8329af52fa62f",
+        "android_client_info": {
+          "package_name": "com.art4muslim.zedalmouhajer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950515093682-3mo7ahhl47cn2neqpem4e7a0vgtjqh72.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArof08zCOjLvVu8d8FBKZ_8Hxc0X3FtA8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

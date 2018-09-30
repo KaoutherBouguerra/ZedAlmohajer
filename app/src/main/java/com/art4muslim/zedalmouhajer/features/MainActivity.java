@@ -20,18 +20,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.StringRequest;
 import com.art4muslim.zedalmouhajer.BaseApplication;
 import com.art4muslim.zedalmouhajer.R;
 import com.art4muslim.zedalmouhajer.fragments.AboutAppFragment;
@@ -45,23 +33,14 @@ import com.art4muslim.zedalmouhajer.menu.DrawerAdapter;
 import com.art4muslim.zedalmouhajer.menu.DrawerItem;
 import com.art4muslim.zedalmouhajer.menu.SimpleItem;
 import com.art4muslim.zedalmouhajer.models.Association;
-import com.art4muslim.zedalmouhajer.session.Constants;
-import com.art4muslim.zedalmouhajer.utils.AlertDialogManager;
-import com.google.gson.Gson;
 import com.yarolegovich.slidingrootnav.SlideGravity;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
+import static com.art4muslim.zedalmouhajer.session.Constants.CONSTANT_BEN;
 import static com.art4muslim.zedalmouhajer.session.SessionManager.KEY_NAME;
-import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
 
 public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnItemSelectedListener{
 
@@ -89,8 +68,6 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
     private static final int GENERAL_POS_ABOUT_APP = 2;
     private static final int GENERAL_POS_ITEMS_CONDITIONS = 3;
     private static final int GENERAL_POS_CONTACTS_US = 4;
-    private static final int GENERAL_POS_LOGIN_ASS = 5;
-    private static final int GENERAL_POS_LOGIN_BEN = 6;
 
 
     private String[] screenTitles;
@@ -101,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
     BaseApplication baseApplication;
     Association association;
     private SlidingRootNav slidingRootNav;
-    ArrayList<Association> associations = new ArrayList<Association>();
     private static String TAG = MainActivity.class.getSimpleName();
     @SuppressLint("RestrictedApi")
     @Override
@@ -148,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
             screenTitles = loadGeneralScreenTitles();
 
         }  else {
-            if (from.equals("BEN"))
+            if (from.equals(CONSTANT_BEN))
                 screenTitles = loadBENScreenTitles();
             else screenTitles = loadScreenTitles();
 
@@ -162,15 +138,11 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
                     createItemFor(GENERAL_POS_SHARE_APP),
                     createItemFor(GENERAL_POS_ABOUT_APP),
                     createItemFor(GENERAL_POS_ITEMS_CONDITIONS),
-                    createItemFor(GENERAL_POS_CONTACTS_US),
-                    createItemFor(GENERAL_POS_LOGIN_ASS),
-                    createItemFor(GENERAL_POS_LOGIN_BEN)));
+                    createItemFor(GENERAL_POS_CONTACTS_US)));
 
         } else  {
 
-        if (from.equals("BEN")){
-            // todo get user associations
-            getAllAssociation();
+        if (from.equals(CONSTANT_BEN))
             adapter = new DrawerAdapter(Arrays.asList(
                     createItemFor(BEN_POS_ASSOCIATIONS).setChecked(true),
                     createItemFor(BEN_POS_YOUR_ASSOCIATIONS),
@@ -179,8 +151,6 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
                     createItemFor(BEN_POS_ITEMS_CONDITIONS),
                     createItemFor(BEN_POS_CONTACTS_US),
                     createItemFor(BEN_POS_LOGOUT)));
-        }
-
         else {
             adapter = new DrawerAdapter(Arrays.asList(
                     createItemFor(ASS_POS_INFORMATIONS).setChecked(true),
@@ -211,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
         if (!isLoggedIn) {
             adapter.setSelected(BEN_POS_ASSOCIATIONS);
         } else {
-            if (from.equals("BEN"))
+            if (from.equals(CONSTANT_BEN))
                 adapter.setSelected(BEN_POS_ASSOCIATIONS);
             else
                 adapter.setSelected(ASS_POS_INFORMATIONS);
@@ -253,28 +223,15 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
                 schedule.setArguments(bundle);
                 showFragment(schedule);
 
-            }else if (position == GENERAL_POS_LOGIN_ASS) {
-
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                intent.putExtra("FROM","ASSOCIATION");
-                startActivity(intent);
-
-            }else if (position == GENERAL_POS_LOGIN_BEN) {
-
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                intent.putExtra("FROM","BEN");
-                startActivity(intent);
-
             }
 
         } else {
-        if (from.equals("BEN")) {
+        if (from.equals(CONSTANT_BEN)) {
             if (position == BEN_POS_LOGOUT) {
-                finish();
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                BaseApplication.session.logoutUser();
-                startActivity(intent);
 
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             } else if (position == BEN_POS_ASSOCIATIONS) {
 
                 AssociationsGridFragment schedule = new AssociationsGridFragment();
@@ -315,10 +272,9 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
             }
         } else {
             if (position == ASS_POS_LOGOUT) {
-                finish();
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                BaseApplication.session.logoutUser();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
+                finish();
             } else if (position == ASS_POS_INFORMATIONS) {
                // setTitle(R.string.item_MyInfo);
                 NewsBeneficAssociationFragment schedule = new NewsBeneficAssociationFragment();
@@ -364,6 +320,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
     private void showFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace( R.id.container,fragment,"home Fragment");
+        fragmentTransaction.addToBackStack("");
         fragmentTransaction.commit();
     }
 
@@ -420,63 +377,6 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
 // show message to user
         }
     }
-
-
-    private void getAllAssociation(){
-        String url  = Constants.GET_ADDED_ASSOS+BaseApplication.session.getUserDetails().get(Key_UserID);
-        Log.e(TAG, "getAllAssociation url "+url);
-
-        StringRequest hisRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Gson gson = new Gson();
-                Log.e(TAG, "getAll added Association response === "+response.toString());
-
-
-                JSONArray resJsonObj= null;
-                try {
-                    resJsonObj = new JSONArray(response);
-
-                    for (int i = 0; i<resJsonObj.length();i++) {
-
-                        JSONObject adrJsonObj = resJsonObj.getJSONObject(i);
-                        Association association = gson.fromJson(String.valueOf(adrJsonObj), Association.class);
-                        Log.e(TAG, "getAllAssociation ass name === "+association.getName());
-                        associations.add(association);
-                        baseApplication.setAssociations(associations);
-                    }
-
-                    adapter.notifyDataSetChanged();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Log.e("/////// VOLLEY  ///// ", error.toString());
-
-
-            }
-        }) {
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                try {
-
-                    String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                    return Response.success(json, HttpHeaderParser.parseCacheHeaders(response));
-                } catch (UnsupportedEncodingException e) {
-                    return Response.error(new ParseError(e));
-                }
-            }
-        };
-
-        // Adding request to request queue
-        BaseApplication.getInstance().addToRequestQueue(hisRequest);
-    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here
@@ -486,5 +386,4 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
 
         return super.onOptionsItemSelected(item);
     }
-
 }

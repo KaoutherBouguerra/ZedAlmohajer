@@ -16,6 +16,15 @@
         android:layout_height="match_parent"
         android:id="@+id/grid"
         />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="أنت غير مشترك في أي جمعية حالياً"
+        android:id="@+id/txt_no_data"
+        android:visibility="gone"
+        android:layout_centerVertical="true"/>
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyle"

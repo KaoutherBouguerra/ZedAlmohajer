@@ -61,6 +61,7 @@ public class AssociationsGridFragment extends Fragment {
     BaseApplication app;
     ArrayList<Association> associations = new ArrayList<Association>();
 
+    TextView txtNoData;
     boolean isAdded = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,7 @@ public class AssociationsGridFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_associations, container, false);
+        txtNoData = (TextView) v.findViewById(R.id.txt_no_data);
         app = (BaseApplication) getActivity().getApplicationContext();
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
@@ -99,10 +101,21 @@ public class AssociationsGridFragment extends Fragment {
 
 
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-
-        if (app.getAssociations().size() == 0 )
-            adapter = new CustomGrid(getActivity(), associations, fragmentTransaction);
-        else   adapter = new CustomGrid(getActivity(), app.getAssociations(),fragmentTransaction);
+        if (!isAdded) {
+            if (app.getAssociations().size() == 0)
+                adapter = new CustomGrid(getActivity(), associations, fragmentTransaction);
+            else {
+                associations = app.getAssociations();
+                adapter = new CustomGrid(getActivity(), app.getAssociations(), fragmentTransaction);
+            }
+        } else {
+            if (app.getAddedAssociations().size() == 0)
+                adapter = new CustomGrid(getActivity(), associations, fragmentTransaction);
+            else {
+                associations = app.getAddedAssociations();
+                adapter = new CustomGrid(getActivity(), app.getAddedAssociations(), fragmentTransaction);
+            }
+        }
 
         grid.setAdapter(adapter);
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -135,9 +148,13 @@ public class AssociationsGridFragment extends Fragment {
         });
 
 
-        if (app.getAssociations().size() == 0)
-            getAllAssociation();
-        else{
+        if (!isAdded) {
+            if (app.getAssociations().size() == 0)
+                getAllAssociation();
+
+        }else {
+            if (app.getAddedAssociations().size() == 0)
+                getAllAssociation();
 
         }
         return v;
@@ -166,7 +183,16 @@ public class AssociationsGridFragment extends Fragment {
                         Association association = gson.fromJson(String.valueOf(adrJsonObj), Association.class);
                         Log.e(TAG, "getAllAssociation ass name === "+association.getName());
                         associations.add(association);
+                        if (!isAdded)
                         app.setAssociations(associations);
+                        else app.setAddedAssociations(associations);
+                    }
+
+
+                    if (isAdded && resJsonObj.length() == 0) {
+
+                            txtNoData.setVisibility(View.VISIBLE);
+
                     }
 
                     adapter.notifyDataSetChanged();

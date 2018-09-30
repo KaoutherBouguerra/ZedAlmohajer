@@ -15,6 +15,7 @@ public class Constants {
     public static final String RESET_PASSWORD_URL =BASE_URL+"forgetpassword_ass" ;
     public static final String REGISTER_BENEFIC =BASE_URL+"register_beneficiaries" ;
     public static final String REGISTER_BENEFIC_TO_ASS =BASE_URL+"request_beneficiaries" ;
+    public static final String DELETE_BENEFIC_TO_ASS =BASE_URL+"delete_request_beneficiaries" ;
     public static final String REGISTER_ASSOCIATION =BASE_URL+"register_ass" ;
     public static final String GET_ALL_CITIES =BASE_URL+"getallcountrycityapps" ;
     public static final String GET_ALL_ASS =BASE_URL+"getallass" ;
@@ -37,6 +38,10 @@ public class Constants {
     public static final String UPDATE_BEN_REQUEST =BASE_URL+"update_beneficiaries" ;
     public static final String ADD_COMMENT =BASE_URL+"insertcomment" ;
     public static final String GET_ALL_COMMENTS =BASE_URL+"getallnewcomments/" ;
+    public static final String GET_TOKEN_BEN =BASE_URL+"appchangetokenbene" ;
+    public static final String GET_TOKEN_ASS =BASE_URL+"appchangetokenasa" ;
 
     public static final String YOUTUBE_API_KEY = "AIzaSyDK4545yE-PVf_5HmcKj9IBIusckDLoNmg";
+    public static final String CONSTANT_BEN = "BEN";
+    public static final String CONSTANT_ASSOCIATION = "ASSOCIATION";
 }

@@ -231,7 +231,7 @@ public class RegisterToAssociationFragment extends Fragment {
                         selectedAssociationFragment.setArguments(args);
                         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                         fragmentTransaction.replace(R.id.container, selectedAssociationFragment, "home Fragment");
-
+                        fragmentTransaction.addToBackStack("");
                         fragmentTransaction.commit();
 
 

@@ -46,6 +46,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -81,7 +83,9 @@ public class NonActiveRequestFragment extends Fragment implements SwipeRefreshLa
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
        // mTitle.setText( R.string.item_active_requests);
+        if (app.getAssociation() != null)
         idAss = app.getAssociation().getId();
+        else idAss = BaseApplication.session.getUserDetails().get(Key_UserID);
         isActive = true;
         //  sessionman=new SessionManager(getContext());
 
@@ -143,7 +147,10 @@ public class NonActiveRequestFragment extends Fragment implements SwipeRefreshLa
     private void fetchAllBene() {
 
         swipeRefreshLayout.setRefreshing(true);
-        String url = Constants.GET_ALL_BENEF+app.getAssociation().getId();
+        String url;
+        if (app.getAssociation() != null)
+         url = Constants.GET_ALL_BENEF+app.getAssociation().getId();
+        else url = Constants.GET_ALL_BENEF+BaseApplication.session.getUserDetails().get(Key_UserID);
         //+KEY_API_TOKEN+"="+ BaseApplication.session.getAccessToken();
 
         Log.e(TAG, "fetchAllBene url "+url);

@@ -1,5 +1,6 @@
 package com.art4muslim.zedalmouhajer.features;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +38,7 @@ import com.art4muslim.zedalmouhajer.features.register.RegisterActivity;
 import com.art4muslim.zedalmouhajer.models.Association;
 import com.art4muslim.zedalmouhajer.session.Constants;
 import com.art4muslim.zedalmouhajer.utils.AlertDialogManager;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -49,6 +51,10 @@ import java.util.Map;
 import eu.inmite.android.lib.validations.form.annotations.MinLength;
 import eu.inmite.android.lib.validations.form.annotations.NotEmpty;
 
+import static com.art4muslim.zedalmouhajer.session.Constants.CONSTANT_ASSOCIATION;
+import static com.art4muslim.zedalmouhajer.session.Constants.CONSTANT_BEN;
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
+
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     Button btnSignIn, btnSignUp;
@@ -60,17 +66,23 @@ public class LoginActivity extends AppCompatActivity {
     @NotEmpty(messageId = R.string.nonEmpty, order = 2)
     @MinLength(value = 4, messageId =  R.string.validation_number_length, order = 3)
     protected EditText inputPassword;
-
-
+    TextView _txt_ben, _txt_ass;
+    String newTokenFromFCM;
     ImageView _img_logo;
     String accountType;
-
+    String from = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        accountType = getIntent().getStringExtra("FROM");
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(this, instanceIdResult -> {
+
+            newTokenFromFCM = instanceIdResult.getToken();
+            Log.e("new Token From FCM", newTokenFromFCM);
+
+        });
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -78,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         initFields();
-
+        accountType = _txt_ben.getText().toString();
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,7 +116,32 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
+        _txt_ben.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                accountType = _txt_ben.getText().toString();
+                _txt_ben.setBackgroundResource(R.drawable.round_left_rect_shape_b);
+                _txt_ben.setTextColor(ContextCompat.getColor(LoginActivity.this, android.R.color.white));
+                _txt_ass.setBackgroundResource(R.drawable.round_right_rect_shape_w);
+                _txt_ass.setTextColor(ContextCompat.getColor(LoginActivity.this, R.color.colorAccent));
 
+
+
+            }
+        });
+        _txt_ass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                 accountType = _txt_ass.getText().toString();
+                _txt_ass.setBackgroundResource(R.drawable.round_right_rect_shape_b);
+                _txt_ass.setTextColor(ContextCompat.getColor(LoginActivity.this, android.R.color.white));
+                _txt_ben.setBackgroundResource(R.drawable.round_left_rect_shape_w);
+                _txt_ben.setTextColor(ContextCompat.getColor(LoginActivity.this, R.color.colorAccent));
+
+
+            }
+        });
 
     }
 
@@ -120,7 +157,8 @@ public class LoginActivity extends AppCompatActivity {
         _linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
 
         btForgetPassword = (TextView) findViewById(R.id.btnForgetPassword);
-
+        _txt_ben = (TextView) findViewById(R.id.txt_ben);
+        _txt_ass = (TextView) findViewById(R.id.txt_ass);
     }
 
     private void attemptLogin() {
@@ -170,14 +208,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private void LoginFirst(final String phone, final String password) {
         String url;
-        if (accountType.equals("BEN")){
+        if (accountType.equals(_txt_ben.getText().toString())){
             url = Constants.LOGIN_URL_BEN;
-
+            from = CONSTANT_BEN;
         }
 
         else  {
             url = Constants.LOGIN_URL_ASS;
-
+            from = CONSTANT_ASSOCIATION;
         }
         //+"phone="+phone+"&password="+password;
 
@@ -198,7 +236,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     if (status) {
 
-
                     //    BaseApplication.session.saveAccessToken(api_token);
                         String id = jsonObject.getString("id_user");
                         String name = jsonObject.getString("name_user");
@@ -209,14 +246,18 @@ public class LoginActivity extends AppCompatActivity {
                         BaseApplication.session.createLoginSession(id,name,phone,"","","");
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         if (accountType.equals("مستفيد"))
-                            intent.putExtra("FROM","BEN");
+                            intent.putExtra("FROM",CONSTANT_BEN);
                         else  {
-                            intent.putExtra("FROM","ASSOCIATION");
+                            intent.putExtra("FROM",CONSTANT_ASSOCIATION);
                             intent.putExtra("ASSOCIATION",association);
                         }
 
 
-                        BaseApplication.session.saveKeyIsFrom(accountType);
+
+
+                        BaseApplication.session.saveKeyIsFrom(from);
+
+                        sendRegistrationToServer(newTokenFromFCM);
                         startActivity(intent);
 
                         finish();
@@ -300,7 +341,85 @@ public class LoginActivity extends AppCompatActivity {
         BaseApplication.getInstance().addToRequestQueue(LoginFirstRequest);
 
     }
+    private void sendRegistrationToServer(String token) {
 
+        String url = Constants.GET_TOKEN_BEN;
+        if (BaseApplication.session.isLoggedIn()){
+            if (BaseApplication.session.getIsFrom().equals(CONSTANT_ASSOCIATION)){
+                url = Constants.GET_TOKEN_ASS;
+
+            }
+            sendToken(BaseApplication.session.getUserDetails().get(Key_UserID), token, url);
+        }
+
+    }
+
+
+
+    private void sendToken(final String id, final String token, String url ) {
+
+
+
+        Log.e(TAG, "url "+url);
+        Log.e(TAG, "id   "+id);
+        Log.e(TAG, "token "+token);
+
+
+        StringRequest LoginFirstRequest = new StringRequest(com.android.volley.Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                Log.v(TAG,"response send token to server == " +response);
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+
+                if (error instanceof AuthFailureError) {
+
+                    // AlertDialogManager.showAlertDialog(activity,activity.getResources().getString(R.string.app_name),activity.getResources().getString(R.string.authontiation),false,3);
+
+                } else if (error instanceof ServerError) {
+                    //  AlertDialogManager.showAlertDialog(activity,activity.getResources().getString(R.string.app_name),activity.getResources().getString(R.string.servererror),false,3);
+                } else if (error instanceof NetworkError) {
+                    // AlertDialogManager.showAlertDialog(activity,activity.getResources().getString(R.string.networkerror),activity.getResources().getString(R.string.networkerror),false,3);
+
+                } else if (error instanceof ParseError) {
+                } else if (error instanceof NoConnectionError) {
+                } else if (error instanceof TimeoutError) {
+                    // AlertDialogManager.showAlertDialog(activity,activity.getResources().getString(R.string.app_name),activity.getResources().getString(R.string.timeouterror),false,3);
+                }
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("id", id);
+                params.put("token", token);
+
+                return params;
+            }
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                try {
+
+                    String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                    return Response.success(json, HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                }
+            }
+        };
+
+
+        // Adding request to request queue
+        BaseApplication.getInstance().addToRequestQueue(LoginFirstRequest);
+
+
+    }
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
