@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import com.art4muslim.zedalmouhajer.BaseApplication;
 import com.art4muslim.zedalmouhajer.R;
+import com.art4muslim.zedalmouhajer.models.Association;
+import com.art4muslim.zedalmouhajer.session.Constants;
 
 import static com.art4muslim.zedalmouhajer.session.SessionManager.KEY_NAME;
 
@@ -32,14 +34,34 @@ public class NewsBeneficAssociationFragment extends Fragment {
     public static int int_items = 2 ;
     BaseApplication baseApplication;
     View v;
-
+    Association association;
+    AssociationBeneficiaryFragment fragmentBen;
+    AssociationNewsFragment fragmentNews;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_news_benefic_association, container, false);
-
         baseApplication = (BaseApplication)getActivity().getApplicationContext();
+
+        if (BaseApplication.session.getIsFrom().equals(Constants.CONSTANT_ASSOCIATION))
+            association = baseApplication.getAssociation();
+        else association = (Association) getArguments().getSerializable("ASSOCIATION");
+
+
+        fragmentNews = new AssociationNewsFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable("ASSOCIATION", association);
+
+        fragmentNews.setArguments(args);
+
+
+        fragmentBen = new AssociationBeneficiaryFragment();
+        Bundle argsBen = new Bundle();
+        argsBen.putSerializable("ASSOCIATION", association);
+        fragmentBen.setArguments(argsBen);
+
         tabLayout = (TabLayout) v.findViewById(R.id.tabs);
         viewPager = (ViewPager) v.findViewById(R.id.viewpager);
       //  isRightToLeft = getResources().getBoolean(R.bool.is_right_to_left);
@@ -91,8 +113,8 @@ public class NewsBeneficAssociationFragment extends Fragment {
         public Fragment getItem(int position)
         {
             switch (position){
-                case 0 : return new AssociationNewsFragment();
-                case 1 : return new AssociationBeneficiaryFragment();
+                case 0 : return fragmentNews;
+                case 1 : return fragmentBen;
 
             }
             return null;

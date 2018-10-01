@@ -26,7 +26,7 @@ public class TabContactUsFragment extends Fragment {
     public static ViewPager viewPager;
     public static int int_items = 3 ;
     boolean isRightToLeft  ;
-    String from = "ASSOCIATION";
+
     CommunicateWithAssociationFragment communicateWithAssociationFragment;
     View v;
     @Override
@@ -41,16 +41,13 @@ public class TabContactUsFragment extends Fragment {
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
         mTitle.setText( R.string.item_contact);
         communicateWithAssociationFragment = new CommunicateWithAssociationFragment();
-        if (getArguments() != null) {
-            from = getArguments().getString("FROM");
-            Bundle bundle = new Bundle();
-            bundle.putString("FROM",from);
-             communicateWithAssociationFragment.setArguments(bundle);
 
 
+        Bundle bundle = new Bundle();
+        bundle.putString("FROM","APP");
+        communicateWithAssociationFragment.setArguments(bundle);
 
-        }
-        Log.e("TAB CONTACT"," from what? "+from);
+
         /**
          *Set an Apater for the View Pager
          */

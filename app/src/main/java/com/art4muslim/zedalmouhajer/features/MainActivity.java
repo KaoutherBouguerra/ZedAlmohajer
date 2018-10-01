@@ -20,10 +20,24 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
 import com.art4muslim.zedalmouhajer.BaseApplication;
 import com.art4muslim.zedalmouhajer.R;
+import com.art4muslim.zedalmouhajer.features.register.AssociationFragment;
 import com.art4muslim.zedalmouhajer.fragments.AboutAppFragment;
 import com.art4muslim.zedalmouhajer.fragments.AddSubjectFragment;
+import com.art4muslim.zedalmouhajer.fragments.AllInfosAssFragment;
 import com.art4muslim.zedalmouhajer.fragments.ApplicationToJoinFragment;
 import com.art4muslim.zedalmouhajer.fragments.AssociationsGridFragment;
 import com.art4muslim.zedalmouhajer.fragments.TermsAndConditionsFragment;
@@ -33,25 +47,38 @@ import com.art4muslim.zedalmouhajer.menu.DrawerAdapter;
 import com.art4muslim.zedalmouhajer.menu.DrawerItem;
 import com.art4muslim.zedalmouhajer.menu.SimpleItem;
 import com.art4muslim.zedalmouhajer.models.Association;
+import com.art4muslim.zedalmouhajer.session.Constants;
+import com.art4muslim.zedalmouhajer.utils.AlertDialogManager;
+import com.google.gson.Gson;
 import com.yarolegovich.slidingrootnav.SlideGravity;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static com.art4muslim.zedalmouhajer.session.Constants.CONSTANT_BEN;
 import static com.art4muslim.zedalmouhajer.session.SessionManager.KEY_NAME;
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserIMAGE;
+import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserPhone;
 
 public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnItemSelectedListener{
 
-    private static final int ASS_POS_INFORMATIONS = 0;
-    private static final int ASS_POS_ADD_SUBJECT = 1;
-    private static final int ASS_POS_BENEFICIARY_REQUESTS = 2;
-    private static final int ASS_POS_SHARE_APP = 3;
-    private static final int ASS_POS_ABOUT_APP = 4;
-    private static final int ASS_POS_ITEMS_CONDITIONS = 5;
-    private static final int ASS_POS_CONTACTS_US = 6;
-    private static final int ASS_POS_LOGOUT = 7;
+    private static final int ASS_POS_HOME_ASS = 0;
+    private static final int ASS_POS_INFORMATIONS = 1;
+    private static final int ASS_POS_ADD_SUBJECT = 2;
+    private static final int ASS_POS_BENEFICIARY_REQUESTS = 3;
+    private static final int ASS_POS_SHARE_APP = 4;
+    private static final int ASS_POS_ABOUT_APP = 5;
+    private static final int ASS_POS_ITEMS_CONDITIONS = 6;
+    private static final int ASS_POS_CONTACTS_US = 7;
+    private static final int ASS_POS_LOGOUT = 8;
 
 
     private static final int BEN_POS_ASSOCIATIONS = 0;
@@ -68,17 +95,20 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
     private static final int GENERAL_POS_ABOUT_APP = 2;
     private static final int GENERAL_POS_ITEMS_CONDITIONS = 3;
     private static final int GENERAL_POS_CONTACTS_US = 4;
+    private static final int GENERAL_POS_LOGIN_ASS = 5;
+    private static final int GENERAL_POS_LOGIN_BEN = 6;
 
 
     private String[] screenTitles;
     String from = null;
     boolean isLoggedIn = false;
-    DrawerAdapter adapter;
+    DrawerAdapter adapter ;
 
     BaseApplication baseApplication;
     Association association;
     private SlidingRootNav slidingRootNav;
     private static String TAG = MainActivity.class.getSimpleName();
+    ArrayList<Association> associations = new ArrayList<Association>();
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,22 +122,29 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
   //      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
   //      getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // back button pressed
-
-                finish();
-            }
+        toolbar.setNavigationOnClickListener(v -> {
+            // back button pressed
+            finish();
         });
 
         baseApplication = (BaseApplication) getApplicationContext();
-
-        association = (Association) getIntent().getSerializableExtra("ASSOCIATION");
-
-        baseApplication.setAssociation(association);
         from = BaseApplication.session.getIsFrom();
         isLoggedIn = BaseApplication.session.isLoggedIn();
+        if (isLoggedIn) {
+
+
+            if (from.equals(Constants.CONSTANT_ASSOCIATION)){
+                association = new Association(BaseApplication.session.getUserDetails().get(Key_UserID),BaseApplication.session.getUserDetails().get(KEY_NAME),BaseApplication.session.getUserDetails().get(Key_UserPhone),BaseApplication.session.getUserDetails().get(Key_UserIMAGE));
+                Log.e(TAG, " association id = " + association.getId());
+                baseApplication.setAssociation(association);
+            }
+
+        }
+
+
+
+
+
 
         slidingRootNav = new SlidingRootNavBuilder(this)
                 .withToolbarMenuToggle(toolbar)
@@ -138,11 +175,17 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
                     createItemFor(GENERAL_POS_SHARE_APP),
                     createItemFor(GENERAL_POS_ABOUT_APP),
                     createItemFor(GENERAL_POS_ITEMS_CONDITIONS),
-                    createItemFor(GENERAL_POS_CONTACTS_US)));
+                    createItemFor(GENERAL_POS_CONTACTS_US),
+                    createItemFor(GENERAL_POS_LOGIN_ASS),
+                    createItemFor(GENERAL_POS_LOGIN_BEN)));
 
         } else  {
 
-        if (from.equals(CONSTANT_BEN))
+        if (from.equals(CONSTANT_BEN)) {
+            if (baseApplication.getAddedAssociations().size() == 0)
+                getAllAssociation();
+
+
             adapter = new DrawerAdapter(Arrays.asList(
                     createItemFor(BEN_POS_ASSOCIATIONS).setChecked(true),
                     createItemFor(BEN_POS_YOUR_ASSOCIATIONS),
@@ -151,9 +194,11 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
                     createItemFor(BEN_POS_ITEMS_CONDITIONS),
                     createItemFor(BEN_POS_CONTACTS_US),
                     createItemFor(BEN_POS_LOGOUT)));
+        }
         else {
             adapter = new DrawerAdapter(Arrays.asList(
-                    createItemFor(ASS_POS_INFORMATIONS).setChecked(true),
+                    createItemFor(ASS_POS_HOME_ASS).setChecked(true),
+                    createItemFor(ASS_POS_INFORMATIONS),
                     createItemFor(ASS_POS_ADD_SUBJECT),
                     createItemFor(ASS_POS_BENEFICIARY_REQUESTS),
                     createItemFor(ASS_POS_SHARE_APP),
@@ -184,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
             if (from.equals(CONSTANT_BEN))
                 adapter.setSelected(BEN_POS_ASSOCIATIONS);
             else
-                adapter.setSelected(ASS_POS_INFORMATIONS);
+                adapter.setSelected(ASS_POS_HOME_ASS);
         }
     }
 
@@ -223,15 +268,31 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
                 schedule.setArguments(bundle);
                 showFragment(schedule);
 
+            }else if (position == GENERAL_POS_LOGIN_ASS) {
+
+
+
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                intent.putExtra("FROM", Constants.CONSTANT_ASSOCIATION);
+                startActivity(intent);
+
+            }else if (position == GENERAL_POS_LOGIN_BEN) {
+
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                intent.putExtra("FROM", Constants.CONSTANT_BEN);
+                startActivity(intent);
+
+
             }
 
         } else {
         if (from.equals(CONSTANT_BEN)) {
             if (position == BEN_POS_LOGOUT) {
-
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
                 finish();
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                BaseApplication.session.logoutUser();
+                startActivity(intent);
+
             } else if (position == BEN_POS_ASSOCIATIONS) {
 
                 AssociationsGridFragment schedule = new AssociationsGridFragment();
@@ -272,12 +333,19 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
             }
         } else {
             if (position == ASS_POS_LOGOUT) {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
                 finish();
-            } else if (position == ASS_POS_INFORMATIONS) {
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                BaseApplication.session.logoutUser();
+                startActivity(intent);
+            } else if (position == ASS_POS_HOME_ASS) {
                // setTitle(R.string.item_MyInfo);
                 NewsBeneficAssociationFragment schedule = new NewsBeneficAssociationFragment();
+                showFragment(schedule);
+
+            }else if (position == ASS_POS_INFORMATIONS) {
+
+                AllInfosAssFragment schedule = new AllInfosAssFragment();
+
                 showFragment(schedule);
 
             } else if (position == ASS_POS_ADD_SUBJECT) {
@@ -355,28 +423,77 @@ public class MainActivity extends AppCompatActivity implements DrawerAdapter.OnI
 
         try{
 
-          //  Intent intent =  getPackageManager().getLaunchIntentForPackage(application);
-           // if (intent != null) {
-                // The application exists
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                //  shareIntent.setPackage(application);
-                shareIntent.setType("message/rfc822");
-                shareIntent.putExtra(android.content.Intent.EXTRA_TITLE, title);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, description);
-                // Start the specific social application
-                 startActivity(Intent.createChooser(shareIntent,
-                        " حمل هذا التطبيق مجاناً  "));
-          //  } else {
-                 // The application does not exist
-                // Open GooglePlay or use the default system picker
-         //   }
+            String message = " حمل هذا التطبيق مجانا    https://play.google.com/store?hl=fr";
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("text/plain");
+            share.putExtra(Intent.EXTRA_TEXT, message);
+
+            startActivity(Intent.createChooser(share, " حمل هذا التطبيق مجانا"));
+
 
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
-// show message to user
-        }
+         }
     }
+
+    private void getAllAssociation() {
+
+        String  url = Constants.GET_ADDED_ASSOS+BaseApplication.session.getUserDetails().get(Key_UserID);
+        Log.e(TAG, "getAllAssociation url "+url);
+
+        StringRequest hisRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Gson gson = new Gson();
+                Log.e(TAG, "getAllAssociation response === "+response.toString());
+
+
+                JSONArray resJsonObj= null;
+                try {
+                    resJsonObj = new JSONArray(response);
+
+                    for (int i = 0; i<resJsonObj.length();i++) {
+
+                        JSONObject adrJsonObj = resJsonObj.getJSONObject(i);
+                        Association association = gson.fromJson(String.valueOf(adrJsonObj), Association.class);
+                        Log.e(TAG, "getAllAssociation ass name === "+association.getName());
+                        associations.add(association);
+
+                        baseApplication.setAddedAssociations(associations);
+                    }
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("/////// VOLLEY  ///// ", error.toString());
+
+
+            }
+        }) {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                try {
+
+                    String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                    return Response.success(json, HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                }
+            }
+        };
+
+        // Adding request to request queue
+        BaseApplication.getInstance().addToRequestQueue(hisRequest);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here

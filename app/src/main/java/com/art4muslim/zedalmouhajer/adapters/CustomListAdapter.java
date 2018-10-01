@@ -53,6 +53,7 @@ public class CustomListAdapter extends BaseAdapter {
 	private List<Beneficiar> beneficiars;
 	BaseApplication application;
 
+	Beneficiar beneficiar;
 	String from;
 	FragmentTransaction fragmentTransaction;
 	public CustomListAdapter(Activity activity, List<Beneficiar> myOrderModelItems, String from, FragmentTransaction fragmentTransaction) {
@@ -87,7 +88,7 @@ public class CustomListAdapter extends BaseAdapter {
 
 			convertView = inflater.inflate(R.layout.list_row, null);
 
-		final Beneficiar beneficiar = beneficiars.get(position);
+		beneficiar = beneficiars.get(position);
 		ImageView imgUser = (ImageView)  convertView.findViewById(R.id.imgUser);
 		TextView txt_name = (TextView) convertView.findViewById(R.id.txt_name);
 		Button btnDelete = (Button) convertView.findViewById(R.id.btnDelete);
@@ -96,33 +97,27 @@ public class CustomListAdapter extends BaseAdapter {
 
 		txt_name.setText(beneficiar.getName());
 
-		if (from.equals("BEN")){
+		if (from.equals(Constants.CONSTANT_BEN)){
 			btnActivate.setVisibility(View.GONE);
 			btnDelete.setVisibility(View.GONE);
-			btnModify.setVisibility(View.GONE);
 		}
 
-		btnDelete.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				String url = Constants.DELETE_BEN_REQUEST;
-				updateDelete(beneficiar.getId(), application.getAssociation().getId_user(),url);
+		btnModify.setVisibility(View.GONE);
 
-			}
-		});
-		btnModify.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
+		btnDelete.setOnClickListener(view -> {
+            String url = Constants.DELETE_BEN_REQUEST;
+            updateDelete(beneficiar.getId(), application.getAssociation().getId(),url);
 
-			}
-		});
-		btnActivate.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				String url = Constants.ACTIVE_BEN_REQUEST;
-				updateDelete(beneficiar.getId(), application.getAssociation().getId_user(),url);
-			}
-		});
+        });
+
+		btnModify.setOnClickListener(view -> {
+
+        });
+
+		btnActivate.setOnClickListener(view -> {
+            String url = Constants.ACTIVE_BEN_REQUEST;
+            updateDelete(beneficiar.getId(), application.getAssociation().getId(),url);
+        });
 
 		return convertView;
 	}
@@ -154,8 +149,11 @@ public class CustomListAdapter extends BaseAdapter {
 					String msg = jsonObject.getString("message");
 
 					if (_status) {
-
-
+						if (url.equals(Constants.DELETE_BEN_REQUEST)) {
+							beneficiars.remove(beneficiar);
+							notifyDataSetChanged();
+						}
+						AlertDialogManager.showAlertDialog(activity ,activity.getResources().getString(R.string.app_name),msg,true,0);
 
 					} else {
 

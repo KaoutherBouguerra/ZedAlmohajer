@@ -16,6 +16,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.art4muslim.zedalmouhajer.BaseApplication;
 import com.art4muslim.zedalmouhajer.R;
@@ -26,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -128,6 +130,7 @@ public class SavePhotoTask extends AsyncTask<SavePhotoParams, Void, Void> {
             }
         }) {
 
+
          /*   @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -152,25 +155,34 @@ public class SavePhotoTask extends AsyncTask<SavePhotoParams, Void, Void> {
             @Override
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
-
-                params.put("photo", new DataPart("image_new.jpg", Utils.getFileDataFromDrawable(cnx, image), "image/jpeg"));
+                params.put("image", new DataPart("image_new.png", Utils.getFileDataFromDrawable(cnx, image), "image/png"));
 
                 return params;
             }
            @Override
             protected Map<String,String> getParams(){
                Map<String, String> params = new HashMap<>();
-               params.put("name", name);
-               params.put("youtubelink", youtubelink);
-               params.put("details", ""+ details);
-               params.put("ass_id", ""+ ass_id);
-               Log.e(TAG,"getParams name = "+name);
-               Log.e(TAG,"getParams youtubelink = "+youtubelink);
-               Log.e(TAG,"getParams ass_id = "+ass_id);
-               Log.e(TAG,"getParams details = "+details);
+               try {
+                   byte[] bytesname = name.getBytes("UTF-8");
+                   byte[] bytesyoutubelink = youtubelink.getBytes("UTF-8");
+                   byte[] bytesdetails = details.getBytes("UTF-8");
+                   byte[] bytesass_id = ass_id.getBytes("UTF-8");
 
+                   String bodyname = new String(bytesname, Charset.forName("UTF-8"));
+                   String bodyyoutubelink = new String(bytesyoutubelink, Charset.forName("UTF-8"));
+                   String bodydetails = new String(bytesdetails, Charset.forName("UTF-8"));
+                   String bodyass_id = new String(bytesass_id, Charset.forName("UTF-8"));
+                   params.put("name",  name);
+                   params.put("youtubelink",  youtubelink );
+                   params.put("details",  details);
+                   params.put("ass_id",  ass_id);
+
+               } catch (UnsupportedEncodingException e) {
+                   e.printStackTrace();
+               }
                 return params;
             }
+
 
             @Override
             public byte[] getBody() throws AuthFailureError {

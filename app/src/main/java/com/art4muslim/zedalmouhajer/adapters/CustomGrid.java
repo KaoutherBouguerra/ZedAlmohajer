@@ -29,11 +29,13 @@ public class CustomGrid extends BaseAdapter {
     String languageToLoad;
     ArrayList<Association> associations;
     FragmentTransaction fragmentTransaction;
+    LayoutInflater inflater;
     public CustomGrid(Context c, ArrayList<Association> associations, FragmentTransaction fragmentTransaction ) {
         mContext = c;
         this.associations = associations;
         this.fragmentTransaction = fragmentTransaction;
-      //  languageToLoad = BaseApplication.session.getKey_LANGUAGE();
+        inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
     }
 
     @Override
@@ -45,45 +47,38 @@ public class CustomGrid extends BaseAdapter {
     @Override
     public Object getItem(int position) {
         // TODO Auto-generated method stub
-        return null;
+        return associations.get(position);
     }
 
     @Override
     public long getItemId(int position) {
         // TODO Auto-generated method stub
-        return 0;
+        return position;
     }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
-        View grid;
-        LayoutInflater inflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        final Association cat = associations.get(position);
         if (convertView == null) {
+            convertView = inflater.inflate(R.layout.grid_single, null);
+        }
 
-            grid = new View(mContext);
-            grid = inflater.inflate(R.layout.grid_single, null);
 
-            ImageView imageView = (ImageView)grid.findViewById(R.id.grid_image);
-          //  imageView.setImageResource(cat.getImage());
+
+            final Association cat = associations.get(position);
+
+
+            ImageView imageView = (ImageView)convertView.findViewById(R.id.grid_image);
 
             Picasso.with(mContext)
                     .load(cat.getImage())
                     .fit()
                     .into(imageView);
 
-            assert convertView != null;
-
-        } else {
-            grid = (View) convertView;
-        }
 
 
 
 
-        return grid;
+        return convertView;
     }
 }

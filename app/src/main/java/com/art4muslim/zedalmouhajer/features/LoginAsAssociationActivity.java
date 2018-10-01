@@ -52,7 +52,7 @@ public class LoginAsAssociationActivity extends AppCompatActivity {
     Button btnSignIn;
     ProgressBar _progressBar;
     LinearLayout _linearLayout;
-
+    BaseApplication app;
 
     @NotEmpty(messageId =  R.string.validation_mobile, order = 1)
     protected EditText inputPhone;
@@ -64,6 +64,7 @@ public class LoginAsAssociationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_to_association);
+        app = (BaseApplication) getApplicationContext() ;
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(this, instanceIdResult -> {
 
@@ -182,7 +183,7 @@ public class LoginAsAssociationActivity extends AppCompatActivity {
 
                         Association association = gson.fromJson(String.valueOf(jsonObject), Association.class);
 
-
+                        app.getAssociations().add(new Association(id,name, phone,""));
                         BaseApplication.session.createLoginSession(id,name,phone,"","","");
                         BaseApplication.session.saveKeyIsFrom(CONSTANT_ASSOCIATION);
                         Intent intent = new Intent(LoginAsAssociationActivity.this, MainActivity.class);

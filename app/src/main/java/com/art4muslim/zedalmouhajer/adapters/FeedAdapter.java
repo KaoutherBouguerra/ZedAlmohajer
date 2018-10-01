@@ -243,18 +243,20 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  
                     .load(feedItem.url_image)
                     .into(ivUserProfile);
 
-            if (feedItem.url_news_image != null && !feedItem.url_news_image.isEmpty()){
+            if (feedItem.url_news_image != null && !feedItem.url_news_image.isEmpty()
+                    && (feedItem.url_news_image.endsWith(".jpg")
+                    || feedItem.url_news_image.endsWith(".png")
+                    || feedItem.url_news_image.endsWith(".jpeg")
+                    || feedItem.url_news_image.endsWith(".svg"))) {
                 vImageRoot.setVisibility(View.VISIBLE);
                 Picasso.with(context)
                         .load(feedItem.url_news_image)
                         .into(ivFeedCenter);
-            }
-
-            else vImageRoot.setVisibility(View.GONE);
+            } else vImageRoot.setVisibility(View.GONE);
 
             getAllComments();
-          //  addViews(new Comment("1" ,"عنوان جميل" , "تبهقنق ينبنبن"));
-            if (feedItem.url_video != null){
+
+            if (feedItem.url_video != null && !feedItem.url_video.isEmpty() && feedItem.url_video.contains("watch?v=")) {
                 vVideoRoot.setVisibility(View.VISIBLE);
                 vImageRoot.setVisibility(View.GONE);
 
@@ -280,7 +282,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  
                     public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
                         Log.e("video success"," success reading video " );
                         if (feedItem.url_video.contains("watch?v=")) {
-                            String[] str = feedItem.url_video.split("watch?v=");
+                            String[] str = feedItem.url_video.split("v=");
                             String id = str[1];
                             youTubeThumbnailLoader.setVideo(id);
 
@@ -304,7 +306,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  
                     @Override
                     public void onClick(View view) {
                         if (feedItem.url_video.contains("watch?v=")) {
-                            String[] str = feedItem.url_video.split("watch?v=");
+                            String[] str = feedItem.url_video.split("v=");
                             String id = str[1];
                             Intent intent = YouTubeStandalonePlayer.createVideoIntent((Activity) context, Constants.YOUTUBE_API_KEY, id);
                             context.startActivity(intent);

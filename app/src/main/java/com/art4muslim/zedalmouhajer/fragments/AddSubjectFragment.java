@@ -1,12 +1,18 @@
 package com.art4muslim.zedalmouhajer.fragments;
 
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,16 +44,22 @@ import com.art4muslim.zedalmouhajer.R;
 import com.art4muslim.zedalmouhajer.fragments.contactus.TabFragment2;
 import com.art4muslim.zedalmouhajer.session.Constants;
 import com.art4muslim.zedalmouhajer.utils.AlertDialogManager;
+import com.art4muslim.zedalmouhajer.utils.MultipartUtility;
 import com.art4muslim.zedalmouhajer.utils.SavePhotoParams;
 import com.art4muslim.zedalmouhajer.utils.SavePhotoTask;
+import com.art4muslim.zedalmouhajer.utils.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
@@ -57,11 +69,11 @@ import static com.art4muslim.zedalmouhajer.session.SessionManager.Key_UserID;
  * A simple {@link Fragment} subclass.
  */
 public class AddSubjectFragment extends Fragment {
-
-
+    public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 100;
+    Uri imageUri;
     private static int RESULT_LOAD_IMG = 100;
     View v;
-    EditText _edt_name, _edt_video_link, edt_text;
+    EditText _edt_name, _edt_video_link, edt_text, _edt_photo_name;
     ProgressBar _progressBar;
     LinearLayout _linearLayout;
     Button _btn_send, _btnAddPhoto;
@@ -69,6 +81,7 @@ public class AddSubjectFragment extends Fragment {
     BaseApplication app;
     String idAss;
     Bitmap selectedImage;
+    File selectedImageFile;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,8 +95,8 @@ public class AddSubjectFragment extends Fragment {
         initFields();
         String url;
         if (app.getAssociation() != null)
-            idAss = app.getAssociation().getId_user();
-        else idAss = BaseApplication.session.getUserDetails().get(Key_UserID);
+            idAss = app.getAssociation().getId();
+      //  else idAss = BaseApplication.session.getUserDetails().get(Key_UserID);
 
 
         _btn_send.setOnClickListener(new View.OnClickListener() {
@@ -151,6 +164,7 @@ public class AddSubjectFragment extends Fragment {
         _edt_name = v.findViewById(R.id.edt_name);
         _edt_video_link = v.findViewById(R.id.edt_video_link);
         edt_text = v.findViewById(R.id.edt_text);
+        _edt_photo_name = v.findViewById(R.id.edt_photo_name);
         _btn_send = v.findViewById(R.id.btn_send);
         _btnAddPhoto = v.findViewById(R.id.btnAddPhoto);
         _progressBar=(ProgressBar) v.findViewById(R.id.progressBar);
@@ -160,16 +174,97 @@ public class AddSubjectFragment extends Fragment {
 
 
     private void addSubject(final String name, final String youtubelink, final String details, final String ass_id ) {
+        Thread thread = new Thread(() -> {
+            try  {
+                uploadMedia(name, youtubelink, details, ass_id, selectedImageFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        thread.start();
 
 
-        SavePhotoParams paramsImage = new SavePhotoParams(getActivity(), name, youtubelink, details, ass_id, selectedImage, _linearLayout, _progressBar);
-        SavePhotoTask savePhotoTask = new SavePhotoTask();
-        savePhotoTask.execute(paramsImage);
+      //  SavePhotoParams paramsImage = new SavePhotoParams(getActivity(), name, youtubelink, details, ass_id, selectedImage, _linearLayout, _progressBar);
+       // SavePhotoTask savePhotoTask = new SavePhotoTask();
+       // savePhotoTask.execute(paramsImage);
 
 
 
     }
+    private void uploadMedia(final String name, final String youtubelink, final String details, final String ass_id, File selectedImageFile) {
+        try {
 
+            String charset = "UTF-8";
+
+          //  String requestURL = Data.BASE_URL+Data.URL_UPLOAD_REACTION_TEST;
+            String requestURL = Constants.INSERT_NEW_SUBJECT;
+            MultipartUtility multipart = new MultipartUtility(requestURL, charset);
+
+//            multipart.addHeaderField("User-Agent", "CodeJava");
+//            multipart.addHeaderField("Test-Header", "Header-Value");
+
+            multipart.addFormField("name", name);
+            multipart.addFormField("details", details);
+            multipart.addFormField("youtubelink", youtubelink);
+            multipart.addFormField("ass_id", ass_id);
+
+
+            if (selectedImageFile != null) {
+                Log.e(TAG, " selected image file name = " + selectedImageFile.getName());
+
+                multipart.addFilePart("image", selectedImageFile);
+            }
+            List<String> response = multipart.finish();
+
+            Log.v("rht", "SERVER REPLIED:");
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String line : response) {
+                stringBuilder.append(line);
+
+
+            }
+            String finalString = stringBuilder.toString();
+            Log.v("rht", "finalString json : "+finalString);
+
+
+            getActivity().runOnUiThread(() -> {
+                _linearLayout.setVisibility(View.VISIBLE);
+                _progressBar.setVisibility(View.GONE);
+
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(finalString);
+
+                    boolean _status = jsonObject.getBoolean("status");
+                    String msg = jsonObject.getString("message");
+                    _edt_name.setText("");
+                    edt_text.setText("");
+                    _edt_photo_name.setText("");
+                    _edt_video_link.setText("");
+                    if (_status) {
+                        AlertDialogManager.showAlertDialog(getActivity(),getResources().getString(R.string.app_name),msg,true,0);
+
+
+                    } else {
+
+
+
+                        _linearLayout.setVisibility(View.VISIBLE);
+                        AlertDialogManager.showAlertDialog(getActivity(),getResources().getString(R.string.app_name),msg,false,0);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
@@ -177,9 +272,28 @@ public class AddSubjectFragment extends Fragment {
 
         if (resultCode == RESULT_OK) {
             try {
-                final Uri imageUri = data.getData();
+                imageUri  = data.getData();
+                Log.e(TAG," uri selected image = "+imageUri);
                 final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
                 selectedImage = BitmapFactory.decodeStream(imageStream);
+                // Here, thisActivity is the current activity
+                if (ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+
+                         requestPermissions(
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+
+
+                } else {
+                    // Permission has already been granted
+                    String imagepath = getPath(imageUri);
+                    selectedImageFile = new File(imagepath);
+                    _edt_photo_name.setText(selectedImageFile.getName());
+                }
+
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -191,5 +305,44 @@ public class AddSubjectFragment extends Fragment {
         }
     }
 
+    public String getPath(Uri uri) {
+        String path;
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getActivity().getContentResolver().query(uri, projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex(projection[0]);
+        String filePath = cursor.getString(columnIndex);
+        path = cursor.getString(column_index);
+        cursor.close();
+        selectedImage = BitmapFactory.decodeFile(filePath);
+        return path;
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                Log.e(TAG," permission grantResults.length "+grantResults.length);
+                Log.e(TAG," permission grantResults[0] "+grantResults[0]);
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Log.e(TAG," permission garanted");
+                    String imagepath = getPath(imageUri);
+                    selectedImageFile = new File(imagepath);
+                    _edt_photo_name.setText(selectedImageFile.getName());
+                } else {
+
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+    }
 }

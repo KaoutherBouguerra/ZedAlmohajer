@@ -66,11 +66,11 @@ public class LoginActivity extends AppCompatActivity {
     @NotEmpty(messageId = R.string.nonEmpty, order = 2)
     @MinLength(value = 4, messageId =  R.string.validation_number_length, order = 3)
     protected EditText inputPassword;
-    TextView _txt_ben, _txt_ass;
+
     String newTokenFromFCM;
     ImageView _img_logo;
     String accountType;
-    String from = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +83,7 @@ public class LoginActivity extends AppCompatActivity {
 
         });
 
+        accountType = getIntent().getStringExtra("FROM");
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -90,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         initFields();
-        accountType = _txt_ben.getText().toString();
+
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,32 +117,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-        _txt_ben.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                accountType = _txt_ben.getText().toString();
-                _txt_ben.setBackgroundResource(R.drawable.round_left_rect_shape_b);
-                _txt_ben.setTextColor(ContextCompat.getColor(LoginActivity.this, android.R.color.white));
-                _txt_ass.setBackgroundResource(R.drawable.round_right_rect_shape_w);
-                _txt_ass.setTextColor(ContextCompat.getColor(LoginActivity.this, R.color.colorAccent));
-
-
-
-            }
-        });
-        _txt_ass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                 accountType = _txt_ass.getText().toString();
-                _txt_ass.setBackgroundResource(R.drawable.round_right_rect_shape_b);
-                _txt_ass.setTextColor(ContextCompat.getColor(LoginActivity.this, android.R.color.white));
-                _txt_ben.setBackgroundResource(R.drawable.round_left_rect_shape_w);
-                _txt_ben.setTextColor(ContextCompat.getColor(LoginActivity.this, R.color.colorAccent));
-
-
-            }
-        });
 
     }
 
@@ -157,17 +132,14 @@ public class LoginActivity extends AppCompatActivity {
         _linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
 
         btForgetPassword = (TextView) findViewById(R.id.btnForgetPassword);
-        _txt_ben = (TextView) findViewById(R.id.txt_ben);
-        _txt_ass = (TextView) findViewById(R.id.txt_ass);
+
     }
 
     private void attemptLogin() {
 
-
         // Reset errors.
         inputPhone.setError(null);
         inputPassword.setError(null);
-
 
         // Store values at the time of the login attempt.
         String phone = inputPhone.getText().toString();
@@ -208,14 +180,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private void LoginFirst(final String phone, final String password) {
         String url;
-        if (accountType.equals(_txt_ben.getText().toString())){
+        if (accountType.equals(Constants.CONSTANT_BEN)){
             url = Constants.LOGIN_URL_BEN;
-            from = CONSTANT_BEN;
+
         }
 
         else  {
             url = Constants.LOGIN_URL_ASS;
-            from = CONSTANT_ASSOCIATION;
+
         }
         //+"phone="+phone+"&password="+password;
 
@@ -241,21 +213,22 @@ public class LoginActivity extends AppCompatActivity {
                         String name = jsonObject.getString("name_user");
                         String phone = jsonObject.getString("mobile_user");
 
-                        Association association = gson.fromJson(String.valueOf(jsonObject), Association.class);
+                     //   Association association = gson.fromJson(String.valueOf(jsonObject), Association.class);
 
                         BaseApplication.session.createLoginSession(id,name,phone,"","","");
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        if (accountType.equals("مستفيد"))
+                        if (accountType.equals(Constants.CONSTANT_BEN))
                             intent.putExtra("FROM",CONSTANT_BEN);
                         else  {
+
                             intent.putExtra("FROM",CONSTANT_ASSOCIATION);
-                            intent.putExtra("ASSOCIATION",association);
+                         //   intent.putExtra("ASSOCIATION",association);
                         }
 
 
 
 
-                        BaseApplication.session.saveKeyIsFrom(from);
+                        BaseApplication.session.saveKeyIsFrom(accountType);
 
                         sendRegistrationToServer(newTokenFromFCM);
                         startActivity(intent);

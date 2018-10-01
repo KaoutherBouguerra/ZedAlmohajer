@@ -1,13 +1,21 @@
 package com.art4muslim.zedalmouhajer.features.register;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
@@ -41,19 +49,26 @@ import com.art4muslim.zedalmouhajer.BaseApplication;
 import com.art4muslim.zedalmouhajer.adapters.SpinnerCityAdapter;
 import com.art4muslim.zedalmouhajer.R;
 import com.art4muslim.zedalmouhajer.features.LoginAsAssociationActivity;
+import com.art4muslim.zedalmouhajer.models.Association;
 import com.art4muslim.zedalmouhajer.models.City;
 import com.art4muslim.zedalmouhajer.session.Constants;
 import com.art4muslim.zedalmouhajer.utils.AlertDialogManager;
+import com.art4muslim.zedalmouhajer.utils.MultipartUtility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
@@ -63,16 +78,21 @@ import static android.view.View.VISIBLE;
 public class AssociationFragment extends Fragment {
 
     private static final String TAG = AssociationFragment.class.getSimpleName();
+    public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 100;
+    Uri imageUri;
+    private static int RESULT_LOAD_IMG = 100;
+    Bitmap selectedImage;
+    File selectedImageFile;
     View v;
-    Button btnSignUp;
-    EditText edtNameBenfic, edtPhone,edtAbout, edtEmail, edtPwd, edtRepassword ;
+    Button btnSignUp, _btnAddPhoto;
+    EditText edtNameBenfic, edtPhone,edtAbout, edtEmail, edtPwd, edtRepassword ,_edt_photo_name;
     Spinner spinnerCity;
 
     CheckBox checkbox;
     ProgressBar _progressBar;
     LinearLayout _linearLayout;
     int id_city;
-
+    BaseApplication app;
     SpinnerCityAdapter adapter;
     ArrayList<City> cities = new ArrayList<City>();
 
@@ -81,18 +101,16 @@ public class AssociationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_association, container, false);
-
+        app = (BaseApplication)getActivity().getApplicationContext() ;
         initFields();
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
+        btnSignUp.setOnClickListener(view -> attemptRegister());
 
-            @Override
-            public void onClick(View view) {
 
-                    attemptRegister();
-
-            }
+        _btnAddPhoto.setOnClickListener(view -> {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
         });
-
 
         adapter = new SpinnerCityAdapter(getActivity().getApplicationContext(),
                 android.R.layout.simple_list_item_1,
@@ -134,7 +152,8 @@ public class AssociationFragment extends Fragment {
         edtAbout= v.findViewById(R.id.edt_about);
         edtEmail= v.findViewById(R.id.edt_email);
         edtPwd= v.findViewById(R.id.edt_password);
-
+        _edt_photo_name = v.findViewById(R.id.edt_photo_name);
+        _btnAddPhoto = v.findViewById(R.id.btnAddPhoto);
         edtRepassword= v.findViewById(R.id.edt_repassword);
         _progressBar=(ProgressBar) v.findViewById(R.id.progressBar);
         _linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout4);
@@ -351,6 +370,8 @@ public class AssociationFragment extends Fragment {
 
                 _progressBar.setVisibility(View.VISIBLE);
                 register(name,phone,email, id_city, password,about);
+
+
             }
 
             else
@@ -359,7 +380,7 @@ public class AssociationFragment extends Fragment {
 
         }
     }
-
+/*
     private void register(final String name, final String phone, final String email, final int cityId, final String password, final String about) {
 
         String url = Constants.REGISTER_ASSOCIATION;
@@ -455,17 +476,187 @@ public class AssociationFragment extends Fragment {
 
 
     }
+*/
 
-    private void showFragment(Fragment fragment) {
+    private void register(final String name, final String phone, final String email, final int cityId, final String password, final String about ) {
+        Thread thread = new Thread(() -> {
+            try  {
+                uploadMedia(name, phone, email, cityId,password, about, selectedImageFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
-        Bundle args = new Bundle();
+        thread.start();
 
 
-        fragment.setArguments(args);
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.container, fragment, "home Fragment");
-        fragmentTransaction.addToBackStack("");
-        fragmentTransaction.commit();
+
+
+    }
+    private void uploadMedia(final String name, final String phone, final String email, final int cityId, final String password, final String about, File selectedImageFile) {
+        try {
+
+            String charset = "UTF-8";
+
+            //  String requestURL = Data.BASE_URL+Data.URL_UPLOAD_REACTION_TEST;
+            String requestURL = Constants.REGISTER_ASSOCIATION;
+            MultipartUtility multipart = new MultipartUtility(requestURL, charset);
+
+            Log.e(TAG," association name= "+name);
+            Log.e(TAG," association mobile= "+phone);
+            Log.e(TAG," association email= "+email);
+            Log.e(TAG," association city_id= "+cityId);
+            Log.e(TAG," association password= "+password);
+
+            multipart.addFormField("name", name);
+            multipart.addFormField("mobile", phone);
+            multipart.addFormField("email", email);
+            multipart.addFormField("city_id", ""+cityId);
+            multipart.addFormField("password", password);
+            multipart.addFormField("about", about);
+
+
+            Log.e(TAG," selected image file name = "+selectedImageFile.getName());
+
+            multipart.addFilePart("image", selectedImageFile);
+
+            List<String> response = multipart.finish();
+
+            Log.v("rht", "SERVER REPLIED:");
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String line : response) {
+                stringBuilder.append(line);
+
+
+            }
+            String finalString = stringBuilder.toString();
+            Log.v("rht", "finalString json : "+finalString);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    _linearLayout.setVisibility(View.VISIBLE);
+                    _progressBar.setVisibility(View.GONE);
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(finalString);
+
+                        boolean _status = jsonObject.getBoolean("status");
+                        String msg = jsonObject.getString("message");
+                        edtPwd.setText("");
+                        edtEmail.setText("");
+                        _edt_photo_name.setText("");
+                        edtAbout.setText("");
+                        edtPhone.setText("");
+                        edtRepassword.setText("");
+                        edtNameBenfic.setText("");
+
+
+                        if (_status) {
+                            showDialog();
+
+                        } else {
+
+
+
+                            _linearLayout.setVisibility(View.VISIBLE);
+                            AlertDialogManager.showAlertDialog(getActivity(),getResources().getString(R.string.app_name),msg,false,0);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                //    AlertDialogManager.showAlertDialog(getActivity(),getResources().getString(R.string.app_name),msg,false,0);
+
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
+    @Override
+    public void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+
+
+        if (resultCode == RESULT_OK) {
+            try {
+                imageUri  = data.getData();
+                Log.e(TAG," uri selected image = "+imageUri);
+                final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
+                selectedImage = BitmapFactory.decodeStream(imageStream);
+                // Here, thisActivity is the current activity
+                if (ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+
+                    requestPermissions(
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+
+
+                } else {
+                    // Permission has already been granted
+                    String imagepath = getPath(imageUri);
+                    selectedImageFile = new File(imagepath);
+                    _edt_photo_name.setText(selectedImageFile.getName());
+                }
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_LONG).show();
+            }
+
+        }else {
+            Toast.makeText(getActivity(), "You haven't picked Image",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public String getPath(Uri uri) {
+        String path;
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getActivity().getContentResolver().query(uri, projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex(projection[0]);
+        String filePath = cursor.getString(columnIndex);
+        path = cursor.getString(column_index);
+        cursor.close();
+        selectedImage = BitmapFactory.decodeFile(filePath);
+        return path;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                Log.e(TAG," permission grantResults.length "+grantResults.length);
+                Log.e(TAG," permission grantResults[0] "+grantResults[0]);
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Log.e(TAG," permission garanted");
+                    String imagepath = getPath(imageUri);
+                    selectedImageFile = new File(imagepath);
+                    _edt_photo_name.setText(selectedImageFile.getName());
+                } else {
+
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+    }
 }

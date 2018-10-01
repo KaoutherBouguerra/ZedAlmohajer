@@ -2,6 +2,7 @@ package com.art4muslim.zedalmouhajer.fragments.specific_association;
 
 
 import android.app.ProgressDialog;
+import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -89,10 +90,10 @@ public class AssociationBeneficiaryFragment extends Fragment implements SwipeRef
 
         app = (BaseApplication) getActivity().getApplicationContext();
 
-        if (getArguments() != null)
-            association = (Association) getArguments().getSerializable("ASSOCIATION");
-        else association = app.getAssociation();
 
+        if (BaseApplication.session.getIsFrom().equals(Constants.CONSTANT_ASSOCIATION))
+            association = app.getAssociation();
+        else  association = (Association) getArguments().getSerializable("ASSOCIATION");
 
         isActive = true;
 
@@ -100,17 +101,14 @@ public class AssociationBeneficiaryFragment extends Fragment implements SwipeRef
         listView = (ListView) v.findViewById(R.id.list);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
         fragmentTransaction =  getActivity().getSupportFragmentManager().beginTransaction();
-        adapter = new CustomListAdapter(getActivity(), beneficairesList,"BEN",fragmentTransaction);
+        adapter = new CustomListAdapter(getActivity(), beneficairesList,Constants.CONSTANT_BEN,fragmentTransaction);
 
         listView.setAdapter(adapter);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(true);
+        swipeRefreshLayout.post(() -> {
+            swipeRefreshLayout.setRefreshing(true);
 
-                fetchAllBene();
-            }
+            fetchAllBene();
         });
 
         return v;
@@ -154,9 +152,9 @@ public class AssociationBeneficiaryFragment extends Fragment implements SwipeRef
 
         swipeRefreshLayout.setRefreshing(true);
         String url;
-        if (association != null)
+     //   if(BaseApplication.session.getIsFrom().equals(Constants.CONSTANT_ASSOCIATION))
            url = Constants.GET_ALL_BENEF+association.getId();
-        else url = Constants.GET_ALL_BENEF+BaseApplication.session.getUserDetails().get(Key_UserID);
+       // else url = Constants.GET_ALL_BENEF+ association.getId_user();
         //+KEY_API_TOKEN+"="+ BaseApplication.session.getAccessToken();
 
         Log.e(TAG, "fetchAllBene url "+url);

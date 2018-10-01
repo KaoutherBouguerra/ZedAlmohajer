@@ -2,7 +2,8 @@
 <resources>
 
     <string-array name="ass_activityScreenTitles">
-        <item>معلوماتي</item>
+        <item>الرئيسية </item>
+        <item>معلومات الجمعية</item>
         <item>إضافة موضوع</item>
         <item>طلبات المستفيدين</item>
         <item>شارك التطبيق</item>

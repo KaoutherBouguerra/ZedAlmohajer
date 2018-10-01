@@ -81,7 +81,7 @@ public class SessionManager {
     }
 
     public String getIsFrom(){
-        return pref.getString(KEY_IS_FROM,null);
+        return pref.getString(KEY_IS_FROM,"GENERAL");
     }
 
     public void createLoginSession(String id,String name, String phone, String phoneHome,String thumbnail, String status) {

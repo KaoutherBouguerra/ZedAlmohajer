@@ -33,6 +33,13 @@ public class Association implements Serializable {
     private String email_user;
     private String mobile_user;
 
+    public Association(String id, String name, String mobile, String image) {
+        this.id = id;
+        this.name = name;
+        this.mobile = mobile;
+        this.image = image;
+    }
+
 
     public String getId_user() {
         return id_user;

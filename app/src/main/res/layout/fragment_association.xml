@@ -158,7 +158,36 @@
             android:id="@+id/edt_repassword"
             android:layout_marginBottom="11dp"  />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_photo_name"
+                android:enabled="false"
+                android:paddingBottom="14dp"
+                android:paddingTop="14dp"
+                android:paddingRight="16dp"
+                android:paddingEnd="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:hint="@string/txt_photo_name"
+                android:background="@drawable/round_rect_shape"
+                android:layout_marginBottom="10dp"
+                android:inputType="phone" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:text="@string/txt_add_photo"
+
+                android:background="@drawable/round_green_rect_shape"
+                android:id="@+id/btnAddPhoto"/>
+        </LinearLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

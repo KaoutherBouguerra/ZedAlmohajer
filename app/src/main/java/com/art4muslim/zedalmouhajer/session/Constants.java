@@ -40,6 +40,7 @@ public class Constants {
     public static final String GET_ALL_COMMENTS =BASE_URL+"getallnewcomments/" ;
     public static final String GET_TOKEN_BEN =BASE_URL+"appchangetokenbene" ;
     public static final String GET_TOKEN_ASS =BASE_URL+"appchangetokenasa" ;
+    public static final String GET_INFO_ASS =BASE_URL+"getinfoass/" ;
 
     public static final String YOUTUBE_API_KEY = "AIzaSyDK4545yE-PVf_5HmcKj9IBIusckDLoNmg";
     public static final String CONSTANT_BEN = "BEN";

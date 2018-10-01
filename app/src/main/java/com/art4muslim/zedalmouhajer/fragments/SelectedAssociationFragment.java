@@ -54,7 +54,6 @@ public class SelectedAssociationFragment extends Fragment {
 
     private static final String TAG = SelectedAssociationFragment.class.getSimpleName();
     View v;
-
     LinearLayout linearAbout, linearBen, linearContact, linearRegister;
     ImageView imgAss;
     TextView txtNameAss;
@@ -64,6 +63,8 @@ public class SelectedAssociationFragment extends Fragment {
     boolean isAdded = false;
     Association association;
     BaseApplication app;
+    boolean isUserRegistredToAssociation = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -71,8 +72,10 @@ public class SelectedAssociationFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_selected_association, container, false);
         app = (BaseApplication) getActivity().getApplicationContext();
         association = (Association) getArguments().getSerializable("ASSOCIATION");
-        app.setAssociation(association);
+     //   app.setAssociation(association);
         isAdded = getArguments().getBoolean("IS_ADDED");
+        isUserRegistredToAssociation = isUserRegisterToThisAss();
+
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
@@ -102,18 +105,31 @@ public class SelectedAssociationFragment extends Fragment {
         linearBen.setOnClickListener(view -> {
             // todo check if user connected
             Log.e("selected ass"," is logged = "+BaseApplication.session.isLoggedIn());
-            if (BaseApplication.session.isLoggedIn()) {
-                NewsBeneficAssociationFragment schedule = new NewsBeneficAssociationFragment();
-                showFragment(schedule);
+
+
+
+            if (BaseApplication.session.isLoggedIn() && isUserRegistredToAssociation) {
+
+                NewsBeneficAssociationFragment fragment = new NewsBeneficAssociationFragment();
+
+                Bundle args = new Bundle();
+                args.putSerializable("ASSOCIATION", association);
+
+                fragment.setArguments(args);
+                showFragment(fragment);
+
             }else {
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent);
+                AlertDialogManager.showAlertDialog(getActivity(),getResources().getString(R.string.app_name),"إشترك فالجمعية لتتمكن من الدخول لهذا القسم",false,0);
+
+              //  Intent intent = new Intent(getActivity(), LoginActivity.class);
+            //    startActivity(intent);
             }
         });
 
         linearContact.setOnClickListener(view -> {
-            CommunicateWithAssociationFragment associationBeneficiaryFragment = new CommunicateWithAssociationFragment();
-            showFragment(associationBeneficiaryFragment);
+            CommunicateWithAssociationFragment communicateWithAssociationFragment = new CommunicateWithAssociationFragment();
+
+            showFragment(communicateWithAssociationFragment);
 
 
         });
@@ -130,14 +146,16 @@ public class SelectedAssociationFragment extends Fragment {
             }
         });
 
-        if (isAdded)
+        if (isUserRegistredToAssociation)
             txt_register.setText("إلغاء الإشتراك");
         else
             txt_register.setText(getString(R.string.txt_association_collab));
+
         return v;
     }
 
     private void init() {
+
         linearAbout = v.findViewById(R.id.linearAbout);
         linearBen = v.findViewById(R.id.linearBen);
         linearContact = v.findViewById(R.id.linearContact);
@@ -147,13 +165,14 @@ public class SelectedAssociationFragment extends Fragment {
         txt_register = v.findViewById(R.id.txt_register);
         _progressBar = v.findViewById(R.id.progressBar);
         _relative =  v.findViewById(R.id.relative);
+
     }
 
     private void showFragment(Fragment fragment) {
 
         Bundle args = new Bundle();
         args.putSerializable("ASSOCIATION", association);
-        args.putString("FROM","BEN");
+        args.putString("FROM",Constants.CONSTANT_BEN);
         fragment.setArguments(args);
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, fragment, "home Fragment");
@@ -174,7 +193,7 @@ public class SelectedAssociationFragment extends Fragment {
     private void register(final String idBen, final String idAss ) {
 
         String url = Constants.REGISTER_BENEFIC_TO_ASS;
-        if (isAdded)
+        if (isUserRegistredToAssociation)
             url = Constants.DELETE_BENEFIC_TO_ASS;
         //+"phone="+phone+"&password="+password;
 
@@ -205,15 +224,16 @@ public class SelectedAssociationFragment extends Fragment {
                         fragmentTransaction.addToBackStack("");
                         fragmentTransaction.commit();
 
-                        if (isAdded) {
+                        if (isUserRegistredToAssociation) {
                             app.getAddedAssociations().remove(association);
                         }else{
                             app.getAddedAssociations().add(association);
-                        }
 
+                        }
+                        isUserRegistredToAssociation = isUserRegisterToThisAss();
                     } else {
 
-                        String msg = jsonObject.getString("msg");
+                        String msg = jsonObject.getString("message");
 
                         AlertDialogManager.showAlertDialog(getActivity(),getResources().getString(R.string.app_name),msg,false,0);
                     }
@@ -274,5 +294,17 @@ public class SelectedAssociationFragment extends Fragment {
         BaseApplication.getInstance().addToRequestQueue(LoginFirstRequest);
 
 
+    }
+
+    private boolean isUserRegisterToThisAss() {
+
+        for (Association userassociation : app.getAddedAssociations()) {
+            if (userassociation.getId().equals(association.getId())) {
+
+                return true;
+
+            }
+        }
+        return false;
     }
 }

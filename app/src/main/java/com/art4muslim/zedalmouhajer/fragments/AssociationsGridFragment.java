@@ -102,20 +102,16 @@ public class AssociationsGridFragment extends Fragment {
 
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
         if (!isAdded) {
-            if (app.getAssociations().size() == 0)
-                adapter = new CustomGrid(getActivity(), associations, fragmentTransaction);
-            else {
+            if (app.getAssociations().size() != 0)
                 associations = app.getAssociations();
-                adapter = new CustomGrid(getActivity(), app.getAssociations(), fragmentTransaction);
-            }
-        } else {
-            if (app.getAddedAssociations().size() == 0)
-                adapter = new CustomGrid(getActivity(), associations, fragmentTransaction);
-            else {
+        }else {
+            if (app.getAddedAssociations().size() != 0)
                 associations = app.getAddedAssociations();
-                adapter = new CustomGrid(getActivity(), app.getAddedAssociations(), fragmentTransaction);
-            }
         }
+
+
+
+        adapter = new CustomGrid(getActivity(), associations, fragmentTransaction);
 
         grid.setAdapter(adapter);
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -152,7 +148,7 @@ public class AssociationsGridFragment extends Fragment {
             if (app.getAssociations().size() == 0)
                 getAllAssociation();
 
-        }else {
+        } else {
             if (app.getAddedAssociations().size() == 0)
                 getAllAssociation();
 

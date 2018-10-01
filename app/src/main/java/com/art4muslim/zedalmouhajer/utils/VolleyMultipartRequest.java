@@ -4,6 +4,8 @@ package com.art4muslim.zedalmouhajer.utils;
  * Created by macbook on 08/11/2017.
  */
 
+import android.util.Log;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -17,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -28,7 +31,7 @@ import java.util.Map;
 public class VolleyMultipartRequest extends Request<String> {
     private final String twoHyphens = "--";
     private final String lineEnd = "\r\n";
-    private final String boundary = "apiclient-" + System.currentTimeMillis();
+    private final String boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW";
 
     private Response.Listener<String> mListener;
     private Response.ErrorListener mErrorListener;
@@ -98,7 +101,7 @@ public class VolleyMultipartRequest extends Request<String> {
             }
 
             // close multipart form data after text and file data
-            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
 
             return bos.toByteArray();
         } catch (IOException e) {
@@ -115,7 +118,8 @@ public class VolleyMultipartRequest extends Request<String> {
      */
     protected Map<String, DataPart> getByteData() throws AuthFailureError {
         return null;
-    }  @Override
+    }
+    @Override
     protected Response<String> parseNetworkResponse(NetworkResponse response) {
         try {
 
@@ -189,9 +193,15 @@ public class VolleyMultipartRequest extends Request<String> {
     private void buildTextPart(DataOutputStream dataOutputStream, String parameterName, String parameterValue) throws IOException {
         dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
         dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\"" + lineEnd);
-        //dataOutputStream.writeBytes("Content-Type: text/plain; charset=UTF-8" + lineEnd);
+   //     dataOutputStream.writeBytes("Content-Type: text/plain; charset=UTF-8" + lineEnd);
         dataOutputStream.writeBytes(lineEnd);
-        dataOutputStream.writeBytes(parameterValue + lineEnd);
+
+        byte[] bytesparameterValue = parameterValue.getBytes("UTF-8");
+        String bodyname = new String(bytesparameterValue, Charset.forName("UTF-8"));
+
+        dataOutputStream.writeBytes(bodyname + lineEnd);
+
+        Log.e("Volley"," parameterValue = "+dataOutputStream.toString());
     }
 
     /**
@@ -237,12 +247,15 @@ public class VolleyMultipartRequest extends Request<String> {
         private String fileName;
         private byte[] content;
         private String type;
+        private String value;
 
         /**
          * Default data part
          */
         public DataPart() {
         }
+
+
 
         /**
          * Constructor with data.

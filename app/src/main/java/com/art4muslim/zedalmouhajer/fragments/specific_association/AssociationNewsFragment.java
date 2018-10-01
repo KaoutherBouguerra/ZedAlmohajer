@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -31,6 +32,7 @@ import com.art4muslim.zedalmouhajer.R;
 import com.art4muslim.zedalmouhajer.adapters.FeedAdapter;
 import com.art4muslim.zedalmouhajer.adapters.FeedItemAnimator;
 import com.art4muslim.zedalmouhajer.menu.Beneficiar;
+import com.art4muslim.zedalmouhajer.models.Association;
 import com.art4muslim.zedalmouhajer.models.News;
 import com.art4muslim.zedalmouhajer.session.Constants;
 import com.art4muslim.zedalmouhajer.utils.Utils;
@@ -63,8 +65,9 @@ public class AssociationNewsFragment extends Fragment  {
     private FeedAdapter feedAdapter;
     TextView txt_msg;
     ImageView img_internet;
+    ProgressBar progressBar;
     private ArrayList<News> actualiteArrayList = new ArrayList<>();
-
+    Association association;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,6 +75,12 @@ public class AssociationNewsFragment extends Fragment  {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_association_news, container, false);
         app = (BaseApplication) getActivity().getApplicationContext();
+
+        Log.e(TAG,"getIsFrom =  "+BaseApplication.session.getIsFrom());
+        if (BaseApplication.session.getIsFrom().equals(Constants.CONSTANT_ASSOCIATION))
+            association = app.getAssociation();
+        else  association = (Association) getArguments().getSerializable("ASSOCIATION");
+
         initFields();
         setupFeed();
         return v;
@@ -81,9 +90,11 @@ public class AssociationNewsFragment extends Fragment  {
         rvFeed =  v.findViewById(R.id.rvFeed);
         txt_msg =  v.findViewById(R.id.txt_msg);
         img_internet =  v.findViewById(R.id.img_internet);
+        progressBar =  v.findViewById(R.id.progressBar);
     }
 
     private void setupFeed() {
+        progressBar.setVisibility(View.VISIBLE);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity()) {
             @Override
             protected int getExtraLayoutSpace(RecyclerView.State state) {
@@ -106,7 +117,7 @@ public class AssociationNewsFragment extends Fragment  {
        //     if (actualiteArrayList.size() == 0)
             startContentAnimation();
         else {
-
+            progressBar.setVisibility(View.GONE);
             txt_msg.setVisibility(View.VISIBLE);
             img_internet.setVisibility(View.VISIBLE);
             txt_msg.setText("لا يوجد اتصال بالإنترنت");
@@ -121,9 +132,9 @@ public class AssociationNewsFragment extends Fragment  {
 
     private void getNews() {
         String url;
-        if (app.getAssociation() != null)
-         url = Constants.GET_ALL_ASS_NEWS+app.getAssociation().getId_user();
-        else url = Constants.GET_ALL_ASS_NEWS+BaseApplication.session.getUserDetails().get(Key_UserID);
+      //  if(BaseApplication.session.getIsFrom().equals(Constants.CONSTANT_ASSOCIATION))
+         url = Constants.GET_ALL_ASS_NEWS+association.getId();
+     //   else url = Constants.GET_ALL_ASS_NEWS+association.getId();
 
         //+KEY_API_TOKEN+"="+ BaseApplication.session.getAccessToken();
 
@@ -134,7 +145,7 @@ public class AssociationNewsFragment extends Fragment  {
             public void onResponse(String response) {
 
                 Log.e(TAG, "get News response === "+response.toString());
-
+                progressBar.setVisibility(View.GONE);
                 try {
                     JSONArray resJsonObj = new JSONArray(response);
 
@@ -170,7 +181,7 @@ public class AssociationNewsFragment extends Fragment  {
 
 
                 } catch (JSONException e) {
-
+                    progressBar.setVisibility(View.GONE);
                     e.printStackTrace();
                 }
 
@@ -183,6 +194,7 @@ public class AssociationNewsFragment extends Fragment  {
                 // AlertDialogManager.showAlertDialog(LoginActivity.this,getResources().getString(R.string.app_name),getResources().getString(R.string.usernameandpassword),false,3);
                 txt_msg.setVisibility(View.VISIBLE);
                 img_internet.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 if (error instanceof AuthFailureError) {
                     // AlertDialogManager.showAlertDialog(getActivity(),getResources().getString(R.string.app_name),getResources().getString(R.string.authontiation),false,3);
 

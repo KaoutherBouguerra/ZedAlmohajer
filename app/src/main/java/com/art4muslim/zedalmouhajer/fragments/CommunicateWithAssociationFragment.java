@@ -79,25 +79,19 @@ public class CommunicateWithAssociationFragment extends Fragment {
 
         from = getArguments().getString("FROM");
         Log.e("wowow"," from what? "+from);
-             if (from != null)
-            if (from.equals(CONSTANT_BEN)) {
+        if (from != null)
+            if (!from.equals("APP")) {
+
                 association = (Association) getArguments().getSerializable("ASSOCIATION");
             }
-
-        Log.e("TAAAA"," from what? "+from);
-
-
-
 
         initFields();
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         TextView mTitle = (TextView)   toolbar.getRootView().findViewById(R.id.txtTitle);
 
-        if (from.equals("BEN")) {
+        if (!from.equals("APP")) {
             mTitle.setText( association.getName());
-
-
             _txt_title.setText(association.getName());
             txt_mobile.setText(association.getMobile());
             txt_text.setText(association.getEmail());
@@ -108,7 +102,7 @@ public class CommunicateWithAssociationFragment extends Fragment {
             gPlusUrl = association.getGoogleplus();
             youtubeUrl = association.getYoutube();
 
-        }  else{
+        }  else {
 
             _linear_for_ass.setVisibility(View.GONE);
             // TODO get app info
@@ -126,9 +120,6 @@ public class CommunicateWithAssociationFragment extends Fragment {
                 youtubeUrl = app.getInfoApp().getYoutube();
             }
         }
-
-
-
 
         _btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -238,10 +229,14 @@ public class CommunicateWithAssociationFragment extends Fragment {
             _linearLayout.setVisibility(View.GONE);
             _progressBar.setVisibility(View.VISIBLE);
             String idAss ;
-            if (association != null)
+            if (association != null){
                 idAss =   association.getId();
-            else idAss = BaseApplication.session.getUserDetails().get(Key_UserID);
-            sendMessage(name,phone,text, Integer.parseInt(idAss));
+                sendMessage(name,phone,text,  idAss);
+            }else {
+                sendMessage(name,phone,text, "");
+            }
+
+
         }
 
     }
@@ -349,9 +344,12 @@ public class CommunicateWithAssociationFragment extends Fragment {
     }
 
 
-    private void sendMessage(final String name, final String phone, final String text, final int assId) {
+    private void sendMessage(final String name, final String phone, final String text, final String assId) {
+        String url = Constants.INSERT_ENQUIRY;
 
-        String url = Constants.GET_REGISTER_ASS;
+        if (!from.equals("APP")) {
+            url = Constants.GET_REGISTER_ASS;
+        }
         //+"phone="+phone+"&password="+password;
 
         Log.e(TAG, "register url "+url);
